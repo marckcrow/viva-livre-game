@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Heart, QrCode } from "lucide-react";
+import pixQRCode from "@/assets/pix-qrcode.jpeg";
 
 const Donate = () => {
   const navigate = useNavigate();
@@ -44,9 +45,11 @@ const Donate = () => {
 
               <div className="bg-background p-8 rounded-lg flex justify-center items-center">
                 <div className="text-center space-y-4">
-                  <div className="bg-primary/10 p-4 rounded-lg inline-block">
-                    <QrCode className="w-32 h-32 text-primary" />
-                  </div>
+                  <img 
+                    src={pixQRCode} 
+                    alt="QR Code PIX para doação" 
+                    className="w-64 h-auto rounded-lg shadow-md"
+                  />
                   <p className="text-sm text-muted-foreground">
                     QR Code PIX
                   </p>
