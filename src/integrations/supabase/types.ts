@@ -41,6 +41,66 @@ export type Database = {
         }
         Relationships: []
       }
+      alcohol_consumption_log: {
+        Row: {
+          consumption_date: string
+          created_at: string
+          drink_type: string
+          id: string
+          notes: string | null
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          consumption_date?: string
+          created_at?: string
+          drink_type: string
+          id?: string
+          notes?: string | null
+          quantity: number
+          user_id: string
+        }
+        Update: {
+          consumption_date?: string
+          created_at?: string
+          drink_type?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      alcohol_reduction_plan: {
+        Row: {
+          created_at: string
+          current_phase: number
+          id: string
+          phase_start_date: string
+          plan_start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_phase?: number
+          id?: string
+          phase_start_date?: string
+          plan_start_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_phase?: number
+          id?: string
+          phase_start_date?: string
+          plan_start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
