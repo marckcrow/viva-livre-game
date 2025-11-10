@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import DaysCounter from "@/components/DaysCounter";
 import AchievementsList from "@/components/AchievementsList";
-import AlcoholReductionPlan from "@/components/AlcoholReductionPlan";
-import AlcoholConsumptionLog from "@/components/AlcoholConsumptionLog";
+import ReductionPlan from "@/components/ReductionPlan";
+import ConsumptionLog from "@/components/ConsumptionLog";
 import { Heart, LogOut, Sparkles } from "lucide-react";
 
 const Dashboard = () => {
@@ -137,8 +137,8 @@ const Dashboard = () => {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
-          <AlcoholReductionPlan />
-          <AlcoholConsumptionLog />
+          <ReductionPlan />
+          <ConsumptionLog />
         </div>
 
         {session?.user && (

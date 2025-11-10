@@ -41,62 +41,38 @@ export type Database = {
         }
         Relationships: []
       }
-      alcohol_consumption_log: {
+      consumption_log: {
         Row: {
+          cigarette_count: number | null
           consumption_date: string
+          consumption_type: string
           created_at: string
-          drink_type: string
+          drink_type: string | null
           id: string
           notes: string | null
           quantity: number
           user_id: string
         }
         Insert: {
+          cigarette_count?: number | null
           consumption_date?: string
+          consumption_type?: string
           created_at?: string
-          drink_type: string
+          drink_type?: string | null
           id?: string
           notes?: string | null
           quantity: number
           user_id: string
         }
         Update: {
+          cigarette_count?: number | null
           consumption_date?: string
+          consumption_type?: string
           created_at?: string
-          drink_type?: string
+          drink_type?: string | null
           id?: string
           notes?: string | null
           quantity?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
-      alcohol_reduction_plan: {
-        Row: {
-          created_at: string
-          current_phase: number
-          id: string
-          phase_start_date: string
-          plan_start_date: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          current_phase?: number
-          id?: string
-          phase_start_date?: string
-          plan_start_date?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          current_phase?: number
-          id?: string
-          phase_start_date?: string
-          plan_start_date?: string
-          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -165,6 +141,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      reduction_plan: {
+        Row: {
+          created_at: string
+          current_cigarettes_per_day: number | null
+          current_phase: number
+          id: string
+          initial_cigarettes_per_day: number | null
+          phase_start_date: string
+          plan_start_date: string
+          tobacco_start_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_cigarettes_per_day?: number | null
+          current_phase?: number
+          id?: string
+          initial_cigarettes_per_day?: number | null
+          phase_start_date?: string
+          plan_start_date?: string
+          tobacco_start_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_cigarettes_per_day?: number | null
+          current_phase?: number
+          id?: string
+          initial_cigarettes_per_day?: number | null
+          phase_start_date?: string
+          plan_start_date?: string
+          tobacco_start_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_achievements: {
         Row: {
