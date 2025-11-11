@@ -66,10 +66,8 @@ const Dashboard = () => {
       }
     } else if (progress) {
       setProgressId(progress.id);
-      const daysSinceStart = Math.floor(
-        (new Date().getTime() - new Date(progress.start_date).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      setDaysClean(daysSinceStart);
+      // Use days_clean from database (updated daily by cron)
+      setDaysClean(progress.days_clean);
     }
 
     setLoading(false);

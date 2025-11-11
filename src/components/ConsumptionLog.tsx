@@ -89,6 +89,20 @@ const ConsumptionLog = () => {
 
       if (error) throw error;
 
+      // Reset progress when consumption is logged
+      const { error: progressError } = await supabase
+        .from("progress_tracking")
+        .update({
+          days_clean: 0,
+          start_date: new Date().toISOString(),
+          last_check_in: new Date().toISOString(),
+        })
+        .eq("user_id", session.user.id);
+
+      if (progressError) {
+        console.error("Error resetting progress:", progressError);
+      }
+
       toast({
         title: "Registro salvo",
         description: "Seu consumo foi registrado com sucesso",
