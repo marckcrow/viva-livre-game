@@ -1,8 +1,24 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
+import React from 'https://esm.sh/react@18.3.1'
+import { Resend } from 'https://esm.sh/resend@4.0.0'
+import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22'
+import { EncouragementEmail } from './_templates/encouragement.tsx'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
+
+// Milestones that trigger emails
+const EMAIL_MILESTONES = [1, 7, 15, 30, 60, 100]
+
+// Send emails every 7 days after 100
+const shouldSendEmail = (days: number): boolean => {
+  if (EMAIL_MILESTONES.includes(days)) return true
+  if (days > 100 && days % 7 === 0) return true
+  return false
 }
 
 Deno.serve(async (req) => {
@@ -90,7 +106,7 @@ Deno.serve(async (req) => {
       // Check and unlock achievements
       const { data: achievements, error: achievementsError } = await supabaseAdmin
         .from('achievements')
-        .select('id, days_required')
+        .select('id, name, days_required')
         .lte('days_required', newDaysClean)
 
       if (achievementsError) {
@@ -110,6 +126,7 @@ Deno.serve(async (req) => {
       }
 
       const unlockedIds = new Set(unlockedAchievements?.map(ua => ua.achievement_id) || [])
+      let newAchievementName: string | undefined
 
       // Unlock new achievements
       for (const achievement of achievements || []) {
@@ -125,7 +142,51 @@ Deno.serve(async (req) => {
 
           if (unlockError) {
             console.error(`Error unlocking achievement:`, unlockError)
+          } else if (!newAchievementName) {
+            // Store the first new achievement name for the email
+            newAchievementName = achievement.name
           }
+        }
+      }
+
+      // Send encouragement email if it's a milestone
+      if (shouldSendEmail(newDaysClean) && newDaysClean > 0) {
+        try {
+          // Get user profile for name and email
+          const { data: profile, error: profileError } = await supabaseAdmin
+            .from('profiles')
+            .select('full_name, email')
+            .eq('id', progress.user_id)
+            .single()
+
+          if (profileError) {
+            console.error(`Error fetching profile for email:`, profileError)
+          } else if (profile?.email) {
+            console.log(`Sending encouragement email to ${profile.email} for ${newDaysClean} days`)
+            
+            const html = await renderAsync(
+              React.createElement(EncouragementEmail, {
+                userName: profile.full_name || 'Campeão',
+                daysClean: newDaysClean,
+                achievementName: newAchievementName,
+              })
+            )
+
+            const { error: emailError } = await resend.emails.send({
+              from: 'Viva+ Livre <onboarding@resend.dev>',
+              to: [profile.email],
+              subject: `🎉 ${newDaysClean} ${newDaysClean === 1 ? 'dia' : 'dias'} de vitória!`,
+              html,
+            })
+
+            if (emailError) {
+              console.error(`Error sending encouragement email:`, emailError)
+            } else {
+              console.log(`Encouragement email sent successfully to ${profile.email}`)
+            }
+          }
+        } catch (emailError) {
+          console.error(`Error in email sending process:`, emailError)
         }
       }
     }
