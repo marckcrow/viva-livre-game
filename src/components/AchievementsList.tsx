@@ -29,7 +29,7 @@ const AchievementsList = ({ userId, daysClean }: AchievementsListProps) => {
 
   useEffect(() => {
     checkAndUnlockAchievements();
-  }, [daysClean, achievements]);
+  }, [daysClean, achievements, userId]);
 
   const fetchAchievements = async () => {
     const { data: allAchievements, error: achievementsError } = await supabase

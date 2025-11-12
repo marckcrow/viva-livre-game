@@ -1,22 +1,16 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
-import React from 'https://esm.sh/react@18.3.1'
-import { Resend } from 'https://esm.sh/resend@4.0.0'
-import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22'
-import { EncouragementEmail } from './_templates/encouragement.tsx'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
+// Milestones that trigger notifications
+const NOTIFICATION_MILESTONES = [1, 7, 15, 30, 60, 100]
 
-// Milestones that trigger emails
-const EMAIL_MILESTONES = [1, 7, 15, 30, 60, 100]
-
-// Send emails every 7 days after 100
-const shouldSendEmail = (days: number): boolean => {
-  if (EMAIL_MILESTONES.includes(days)) return true
+// Send notifications every 7 days after 100
+const shouldSendNotification = (days: number): boolean => {
+  if (NOTIFICATION_MILESTONES.includes(days)) return true
   if (days > 100 && days % 7 === 0) return true
   return false
 }
@@ -149,44 +143,31 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Send encouragement email if it's a milestone
-      if (shouldSendEmail(newDaysClean) && newDaysClean > 0) {
+      // Create notification if it's a milestone
+      if (shouldSendNotification(newDaysClean) && newDaysClean > 0) {
         try {
-          // Get user profile for name and email
-          const { data: profile, error: profileError } = await supabaseAdmin
-            .from('profiles')
-            .select('full_name, email')
-            .eq('id', progress.user_id)
-            .single()
+          let notificationMessage = `Parabéns! Você está há ${newDaysClean} ${newDaysClean === 1 ? 'dia' : 'dias'} limpo! 🎉`
+          
+          if (newAchievementName) {
+            notificationMessage += ` Nova conquista desbloqueada: ${newAchievementName}!`
+          }
 
-          if (profileError) {
-            console.error(`Error fetching profile for email:`, profileError)
-          } else if (profile?.email) {
-            console.log(`Sending encouragement email to ${profile.email} for ${newDaysClean} days`)
-            
-            const html = await renderAsync(
-              React.createElement(EncouragementEmail, {
-                userName: profile.full_name || 'Campeão',
-                daysClean: newDaysClean,
-                achievementName: newAchievementName,
-              })
-            )
-
-            const { error: emailError } = await resend.emails.send({
-              from: 'Viva+ Livre <onboarding@resend.dev>',
-              to: [profile.email],
-              subject: `🎉 ${newDaysClean} ${newDaysClean === 1 ? 'dia' : 'dias'} de vitória!`,
-              html,
+          const { error: notificationError } = await supabaseAdmin
+            .from('notifications')
+            .insert({
+              user_id: progress.user_id,
+              title: `${newDaysClean} ${newDaysClean === 1 ? 'dia' : 'dias'} de vitória!`,
+              message: notificationMessage,
+              type: 'achievement'
             })
 
-            if (emailError) {
-              console.error(`Error sending encouragement email:`, emailError)
-            } else {
-              console.log(`Encouragement email sent successfully to ${profile.email}`)
-            }
+          if (notificationError) {
+            console.error(`Error creating notification:`, notificationError)
+          } else {
+            console.log(`Notification created for user ${progress.user_id} - ${newDaysClean} days`)
           }
-        } catch (emailError) {
-          console.error(`Error in email sending process:`, emailError)
+        } catch (notificationError) {
+          console.error(`Error in notification creation process:`, notificationError)
         }
       }
     }

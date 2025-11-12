@@ -8,7 +8,8 @@ import DaysCounter from "@/components/DaysCounter";
 import AchievementsList from "@/components/AchievementsList";
 import ReductionPlan from "@/components/ReductionPlan";
 import ConsumptionLog from "@/components/ConsumptionLog";
-import { Heart, LogOut, Sparkles } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
+import { Heart, LogOut, Sparkles, History as HistoryIcon } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -101,10 +102,17 @@ const Dashboard = () => {
               Viva+ Livre
             </h1>
           </div>
-          <Button onClick={handleSignOut} variant="ghost" size="sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => navigate("/history")} variant="ghost" size="sm">
+              <HistoryIcon className="w-4 h-4 mr-2" />
+              Histórico
+            </Button>
+            <NotificationBell />
+            <Button onClick={handleSignOut} variant="ghost" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
