@@ -112,6 +112,9 @@ const ConsumptionLog = () => {
       setQuantity("");
       setCigarettes("");
       setNotes("");
+      
+      // Reload the page to update progress
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: "Erro ao registrar",
