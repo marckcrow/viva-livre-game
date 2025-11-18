@@ -54,31 +54,64 @@ Deno.serve(async (req) => {
     for (const progress of progressRecords || []) {
       console.log(`Processing user ${progress.user_id}`)
 
-      // Check if user had any consumption yesterday
-      const { data: consumptions, error: consumptionError } = await supabaseAdmin
+      // Get the most recent consumption record for this user
+      const { data: lastConsumption, error: consumptionError } = await supabaseAdmin
         .from('consumption_log')
-        .select('id')
+        .select('consumption_date')
         .eq('user_id', progress.user_id)
-        .eq('consumption_date', yesterdayStr)
+        .order('consumption_date', { ascending: false })
         .limit(1)
+        .maybeSingle()
 
       if (consumptionError) {
         console.error(`Error checking consumption for user ${progress.user_id}:`, consumptionError)
         continue
       }
 
-      let newDaysClean = progress.days_clean
-      let newStartDate = progress.start_date
+      let newDaysClean: number
+      let newStartDate: string
 
-      if (consumptions && consumptions.length > 0) {
-        // User had consumption yesterday - reset progress
-        console.log(`User ${progress.user_id} had consumption yesterday, resetting progress`)
-        newDaysClean = 0
-        newStartDate = new Date().toISOString()
+      if (lastConsumption) {
+        // Calculate days since last consumption
+        const lastConsumptionDate = new Date(lastConsumption.consumption_date)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        lastConsumptionDate.setHours(0, 0, 0, 0)
+        
+        const daysDiff = Math.floor((today.getTime() - lastConsumptionDate.getTime()) / (1000 * 60 * 60 * 24))
+        
+        // If consumption was today or in the future, days clean is 0
+        if (daysDiff <= 0) {
+          newDaysClean = 0
+          newStartDate = new Date().toISOString()
+          console.log(`User ${progress.user_id} has recent consumption, days clean: 0`)
+        } else {
+          // Days clean = days since last consumption
+          newDaysClean = daysDiff
+          newStartDate = new Date(lastConsumptionDate.getTime() + 24 * 60 * 60 * 1000).toISOString() // Day after last consumption
+          console.log(`User ${progress.user_id} days since last consumption: ${newDaysClean}`)
+        }
       } else {
-        // No consumption - increment days clean
-        newDaysClean += 1
-        console.log(`User ${progress.user_id} stayed clean, incrementing to ${newDaysClean} days`)
+        // No consumption records - calculate from account creation
+        const { data: profile, error: profileError } = await supabaseAdmin
+          .from('profiles')
+          .select('created_at')
+          .eq('id', progress.user_id)
+          .single()
+
+        if (profileError || !profile) {
+          console.error(`Error fetching profile for user ${progress.user_id}:`, profileError)
+          continue
+        }
+
+        const accountCreationDate = new Date(profile.created_at)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        accountCreationDate.setHours(0, 0, 0, 0)
+        
+        newDaysClean = Math.floor((today.getTime() - accountCreationDate.getTime()) / (1000 * 60 * 60 * 24))
+        newStartDate = profile.created_at
+        console.log(`User ${progress.user_id} has no consumption records, days since account creation: ${newDaysClean}`)
       }
 
       // Update progress
