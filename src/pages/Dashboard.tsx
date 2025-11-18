@@ -8,6 +8,7 @@ import DaysCounter from "@/components/DaysCounter";
 import AchievementsList from "@/components/AchievementsList";
 import ReductionPlan from "@/components/ReductionPlan";
 import ConsumptionLog from "@/components/ConsumptionLog";
+import HealthBenefits from "@/components/HealthBenefits";
 import { NotificationBell } from "@/components/NotificationBell";
 import { Heart, LogOut, Sparkles, History as HistoryIcon } from "lucide-react";
 
@@ -147,9 +148,12 @@ const Dashboard = () => {
           <ConsumptionLog />
         </div>
 
-        {session?.user && (
-          <AchievementsList userId={session.user.id} daysClean={daysClean} />
-        )}
+        <div className="grid gap-8 md:grid-cols-2">
+          <HealthBenefits daysClean={daysClean} />
+          {session?.user && (
+            <AchievementsList userId={session.user.id} daysClean={daysClean} />
+          )}
+        </div>
       </main>
     </div>
   );

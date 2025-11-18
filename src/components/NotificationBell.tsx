@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { requestNotificationPermission, showNotification } from "@/utils/pushNotifications";
 
 interface Notification {
   id: string;
@@ -27,6 +28,9 @@ export const NotificationBell = () => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
+    // Request notification permission on mount
+    requestNotificationPermission();
+    
     fetchNotifications();
     
     // Subscribe to new notifications
@@ -47,6 +51,12 @@ export const NotificationBell = () => {
           // Show toast for new notification
           toast.success(newNotification.title, {
             description: newNotification.message,
+          });
+
+          // Show native push notification
+          showNotification(newNotification.title, {
+            body: newNotification.message,
+            data: { notificationId: newNotification.id }
           });
         }
       )
