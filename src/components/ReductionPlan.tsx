@@ -1,23 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Leaf, TrendingDown, Calendar, Info, Cigarette } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Leaf, TrendingDown, Cigarette } from "lucide-react";
 import { z } from "zod";
-
-interface ReductionPlanData {
-  id: string;
-  current_phase: number;
-  phase_start_date: string;
-  plan_start_date: string;
-  initial_cigarettes_per_day: number;
-  current_cigarettes_per_day: number;
-}
+import { useLocalPlan } from "@/hooks/useLocalUser";
 
 const cigaretteSchema = z.object({
   initial: z.number().min(0, "Deve ser maior ou igual a 0").max(100, "Valor muito alto"),
@@ -25,11 +14,10 @@ const cigaretteSchema = z.object({
 });
 
 const ReductionPlan = () => {
-  const [plan, setPlan] = useState<ReductionPlanData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { plan, updatePlan, advancePhase } = useLocalPlan();
   const [editingCigarettes, setEditingCigarettes] = useState(false);
-  const [initialCigs, setInitialCigs] = useState("");
-  const [currentCigs, setCurrentCigs] = useState("");
+  const [initialCigs, setInitialCigs] = useState(plan?.initialCigarettesPerDay?.toString() || "");
+  const [currentCigs, setCurrentCigs] = useState(plan?.currentCigarettesPerDay?.toString() || "");
   const { toast } = useToast();
 
   const phaseInfo = {
@@ -62,82 +50,35 @@ const ReductionPlan = () => {
     },
   };
 
-  useEffect(() => {
-    fetchOrCreatePlan();
-  }, []);
-
-  const fetchOrCreatePlan = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { data, error } = await supabase
-        .from("reduction_plan")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (!data) {
-        const { data: newPlan, error: insertError } = await supabase
-          .from("reduction_plan")
-          .insert({ user_id: session.user.id, current_phase: 1 })
-          .select()
-          .single();
-
-        if (insertError) throw insertError;
-        setPlan(newPlan);
-      } else {
-        setPlan(data);
-        setInitialCigs(data.initial_cigarettes_per_day.toString());
-        setCurrentCigs(data.current_cigarettes_per_day.toString());
-      }
-    } catch (error: any) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateCigarettes = async () => {
-    if (!plan) return;
-
+  const handleUpdateCigarettes = () => {
     try {
       const validated = cigaretteSchema.parse({
         initial: parseInt(initialCigs) || 0,
         current: parseInt(currentCigs) || 0,
       });
 
-      await supabase
-        .from("reduction_plan")
-        .update({
-          initial_cigarettes_per_day: validated.initial,
-          current_cigarettes_per_day: validated.current,
-        })
-        .eq("id", plan.id);
+      updatePlan({
+        initialCigarettesPerDay: validated.initial,
+        currentCigarettesPerDay: validated.current,
+      });
 
       toast({ title: "Atualizado!" });
       setEditingCigarettes(false);
-      fetchOrCreatePlan();
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     }
   };
 
-  const advancePhase = async () => {
-    if (!plan || plan.current_phase >= 3) return;
-    await supabase.from("reduction_plan").update({ current_phase: plan.current_phase + 1 }).eq("id", plan.id);
+  const handleAdvancePhase = () => {
+    advancePhase();
     toast({ title: "Parabéns! 🎉", description: "Você avançou de etapa!" });
-    fetchOrCreatePlan();
   };
 
-  if (loading) return <div>Carregando...</div>;
-  if (!plan) return null;
+  if (!plan) return <div>Carregando...</div>;
 
-  const currentPhaseInfo = phaseInfo[plan.current_phase as keyof typeof phaseInfo];
-  const reductionPercent = plan.initial_cigarettes_per_day > 0 
-    ? Math.round(((plan.initial_cigarettes_per_day - plan.current_cigarettes_per_day) / plan.initial_cigarettes_per_day) * 100)
+  const currentPhaseInfo = phaseInfo[plan.currentPhase as keyof typeof phaseInfo];
+  const reductionPercent = plan.initialCigarettesPerDay > 0 
+    ? Math.round(((plan.initialCigarettesPerDay - plan.currentCigarettesPerDay) / plan.initialCigarettesPerDay) * 100)
     : 0;
 
   return (
@@ -148,7 +89,7 @@ const ReductionPlan = () => {
             <Leaf className="w-6 h-6 text-primary" />
             <CardTitle className="text-xl">Plano Integrado</CardTitle>
           </div>
-          <Badge variant="secondary">Etapa {plan.current_phase}/3</Badge>
+          <Badge variant="secondary">Etapa {plan.currentPhase}/3</Badge>
         </div>
         <CardDescription>Álcool e cigarro sob controle</CardDescription>
       </CardHeader>
@@ -174,14 +115,18 @@ const ReductionPlan = () => {
           </h4>
           {!editingCigarettes ? (
             <div className="pl-6 space-y-2">
-              {plan.initial_cigarettes_per_day > 0 && (
+              {plan.initialCigarettesPerDay > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Inicial: {plan.initial_cigarettes_per_day}/dia → Atual: {plan.current_cigarettes_per_day}/dia
+                  Inicial: {plan.initialCigarettesPerDay}/dia → Atual: {plan.currentCigarettesPerDay}/dia
                   {reductionPercent > 0 && <span className="ml-2 text-primary">↓ {reductionPercent}%</span>}
                 </p>
               )}
-              <Button size="sm" variant="outline" onClick={() => setEditingCigarettes(true)}>
-                {plan.initial_cigarettes_per_day > 0 ? "Atualizar" : "Configurar"}
+              <Button size="sm" variant="outline" onClick={() => {
+                setInitialCigs(plan.initialCigarettesPerDay.toString());
+                setCurrentCigs(plan.currentCigarettesPerDay.toString());
+                setEditingCigarettes(true);
+              }}>
+                {plan.initialCigarettesPerDay > 0 ? "Atualizar" : "Configurar"}
               </Button>
             </div>
           ) : (
@@ -208,8 +153,8 @@ const ReductionPlan = () => {
           )}
         </div>
 
-        {plan.current_phase < 3 && (
-          <Button onClick={advancePhase} className="w-full">Avançar para próxima etapa</Button>
+        {plan.currentPhase < 3 && (
+          <Button onClick={handleAdvancePhase} className="w-full">Avançar para próxima etapa</Button>
         )}
       </CardContent>
     </Card>

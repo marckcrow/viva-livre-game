@@ -1,97 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import DaysCounter from "@/components/DaysCounter";
 import AchievementsList from "@/components/AchievementsList";
 import ReductionPlan from "@/components/ReductionPlan";
 import ConsumptionLog from "@/components/ConsumptionLog";
 import HealthBenefits from "@/components/HealthBenefits";
-import { NotificationBell } from "@/components/NotificationBell";
-import { Heart, LogOut, Sparkles, History as HistoryIcon } from "lucide-react";
+import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
+import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { records } = useLocalConsumption();
   const [daysClean, setDaysClean] = useState(0);
-  const [progressId, setProgressId] = useState<string | null>(null);
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (!session) {
-        navigate("/auth");
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (!session) {
-        navigate("/auth");
-      }
-    });
-
-    return () => authListener.subscription.unsubscribe();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (session?.user) {
-      fetchOrCreateProgress();
-    }
-  }, [session]);
-
-  const fetchOrCreateProgress = async () => {
-    if (!session?.user) return;
-
-    const { data: progress, error } = await supabase
-      .from("progress_tracking")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .single();
-
-    if (error && error.code === "PGRST116") {
-      const { data: newProgress, error: createError } = await supabase
-        .from("progress_tracking")
-        .insert({
-          user_id: session.user.id,
-          days_clean: 0,
-        })
-        .select()
-        .single();
-
-      if (!createError && newProgress) {
-        setProgressId(newProgress.id);
-        setDaysClean(0);
-      }
-    } else if (progress) {
-      setProgressId(progress.id);
-      // Use days_clean from database (updated daily by cron)
-      setDaysClean(progress.days_clean);
-    }
-
-    setLoading(false);
-  };
-
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error("Erro ao sair");
-    } else {
-      toast.success("Até logo!");
-      navigate("/");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Sparkles className="w-8 h-8 text-primary animate-pulse" />
-      </div>
-    );
-  }
+    const days = calculateDaysClean(records);
+    setDaysClean(days);
+  }, [records]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,18 +34,13 @@ const Dashboard = () => {
               <HistoryIcon className="w-4 h-4 mr-2" />
               Histórico
             </Button>
-            <NotificationBell />
-            <Button onClick={handleSignOut} variant="ghost" size="sm">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold">Olá, {session?.user?.user_metadata?.full_name || "Campeão"}! 👋</h2>
+          <h2 className="text-3xl font-bold">Olá, Campeão! 👋</h2>
           <p className="text-muted-foreground">Continue firme na sua jornada de liberdade</p>
         </div>
 
@@ -150,9 +71,7 @@ const Dashboard = () => {
 
         <div className="grid gap-8 md:grid-cols-2">
           <HealthBenefits daysClean={daysClean} />
-          {session?.user && (
-            <AchievementsList userId={session.user.id} daysClean={daysClean} />
-          )}
+          <AchievementsList daysClean={daysClean} />
         </div>
       </main>
     </div>

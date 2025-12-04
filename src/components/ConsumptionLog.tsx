@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Wine, Beer, Martini, Cigarette, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { z } from "zod";
+import { useLocalConsumption, useLocalProgress } from "@/hooks/useLocalUser";
 
 const alcoholSchema = z.object({
   quantity: z.number().positive().max(50),
@@ -28,6 +28,8 @@ const ConsumptionLog = () => {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { addRecord } = useLocalConsumption();
+  const { resetProgress } = useLocalProgress();
 
   const drinkTypes = {
     wine: { icon: Wine, label: "Vinho", unit: "taças" },
@@ -67,41 +69,27 @@ const ConsumptionLog = () => {
 
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Usuário não autenticado");
-
-      const insertData: any = {
-        user_id: session.user.id,
-        consumption_type: consumptionType,
-        notes: notes.trim().substring(0, 500) || null,
-      };
-
+      const today = new Date().toISOString().split("T")[0];
+      
       if (consumptionType === "alcohol") {
-        insertData.drink_type = drinkType;
-        insertData.quantity = parseFloat(quantity);
+        addRecord({
+          consumptionType: "alcohol",
+          drinkType,
+          quantity: parseFloat(quantity),
+          consumptionDate: today,
+          notes: notes.trim().substring(0, 500) || undefined,
+        });
       } else {
-        insertData.cigarette_count = parseInt(cigarettes);
+        addRecord({
+          consumptionType: "tobacco",
+          cigaretteCount: parseInt(cigarettes),
+          consumptionDate: today,
+          notes: notes.trim().substring(0, 500) || undefined,
+        });
       }
-
-      const { error } = await supabase
-        .from("consumption_log")
-        .insert(insertData);
-
-      if (error) throw error;
 
       // Reset progress when consumption is logged
-      const { error: progressError } = await supabase
-        .from("progress_tracking")
-        .update({
-          days_clean: 0,
-          start_date: new Date().toISOString(),
-          last_check_in: new Date().toISOString(),
-        })
-        .eq("user_id", session.user.id);
-
-      if (progressError) {
-        console.error("Error resetting progress:", progressError);
-      }
+      resetProgress();
 
       toast({
         title: "Registro salvo",
