@@ -25,7 +25,7 @@ const Index = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-          <Button onClick={() => navigate("/auth")} size="lg" variant="hero" className="text-lg">
+          <Button onClick={() => navigate("/dashboard")} size="lg" variant="hero" className="text-lg">
             Começar Agora
           </Button>
           <Button onClick={() => navigate("/donate")} size="lg" variant="success" className="text-lg">
@@ -97,7 +97,7 @@ const Index = () => {
             <p className="text-muted-foreground">
               Junte-se a milhares de pessoas que já deram o primeiro passo rumo à liberdade
             </p>
-            <Button onClick={() => navigate("/auth")} size="lg" variant="hero" className="text-lg">
+            <Button onClick={() => navigate("/dashboard")} size="lg" variant="hero" className="text-lg">
               <Sparkles className="w-5 h-5 mr-2" />
               Começar Minha Jornada
             </Button>

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Lock, CheckCircle2 } from "lucide-react";
+import { useLocalAchievements } from "@/hooks/useLocalUser";
+import { showNotification } from "@/utils/pushNotifications";
 
 interface Achievement {
   id: string;
@@ -14,22 +16,21 @@ interface Achievement {
 }
 
 interface AchievementsListProps {
-  userId: string;
   daysClean: number;
 }
 
-const AchievementsList = ({ userId, daysClean }: AchievementsListProps) => {
+const AchievementsList = ({ daysClean }: AchievementsListProps) => {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [unlockedIds, setUnlockedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const { unlockedIds, unlockAchievement, isUnlocked } = useLocalAchievements();
 
   useEffect(() => {
     fetchAchievements();
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     checkAndUnlockAchievements();
-  }, [daysClean, achievements, userId]);
+  }, [daysClean, achievements]);
 
   const fetchAchievements = async () => {
     const { data: allAchievements, error: achievementsError } = await supabase
@@ -42,34 +43,20 @@ const AchievementsList = ({ userId, daysClean }: AchievementsListProps) => {
       return;
     }
 
-    const { data: userAchievements, error: userAchievementsError } = await supabase
-      .from("user_achievements")
-      .select("achievement_id")
-      .eq("user_id", userId);
-
-    if (!userAchievementsError && userAchievements) {
-      setUnlockedIds(new Set(userAchievements.map((ua) => ua.achievement_id)));
-    }
-
     setAchievements(allAchievements || []);
     setLoading(false);
   };
 
-  const checkAndUnlockAchievements = async () => {
+  const checkAndUnlockAchievements = () => {
     for (const achievement of achievements) {
-      if (daysClean >= achievement.days_required && !unlockedIds.has(achievement.id)) {
-        const { error } = await supabase.from("user_achievements").insert({
-          user_id: userId,
-          achievement_id: achievement.id,
+      if (daysClean >= achievement.days_required && !isUnlocked(achievement.id)) {
+        unlockAchievement(achievement.id);
+        toast.success(`🎉 Nova conquista desbloqueada: ${achievement.name}!`, {
+          description: achievement.description,
+          duration: 5000,
         });
-
-        if (!error) {
-          setUnlockedIds((prev) => new Set([...prev, achievement.id]));
-          toast.success(`🎉 Nova conquista desbloqueada: ${achievement.name}!`, {
-            description: achievement.description,
-            duration: 5000,
-          });
-        }
+        // Send push notification
+        showNotification(`🎉 ${achievement.name}`, { body: achievement.description });
       }
     }
   };
@@ -99,14 +86,13 @@ const AchievementsList = ({ userId, daysClean }: AchievementsListProps) => {
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {achievements.map((achievement) => {
-            const isUnlocked = unlockedIds.has(achievement.id);
-            const isAvailable = daysClean >= achievement.days_required;
+            const unlocked = isUnlocked(achievement.id);
 
             return (
               <Card
                 key={achievement.id}
                 className={`transition-all duration-300 ${
-                  isUnlocked
+                  unlocked
                     ? "bg-gradient-achievement shadow-achievement border-accent"
                     : "bg-muted/50 opacity-70"
                 }`}
@@ -115,11 +101,11 @@ const AchievementsList = ({ userId, daysClean }: AchievementsListProps) => {
                   <div className="text-4xl mb-2">{achievement.icon}</div>
                   <div className="flex items-center justify-center gap-2">
                     <h3 className="font-semibold">{achievement.name}</h3>
-                    {isUnlocked && <CheckCircle2 className="w-4 h-4 text-success" />}
-                    {!isUnlocked && <Lock className="w-4 h-4 text-muted-foreground" />}
+                    {unlocked && <CheckCircle2 className="w-4 h-4 text-success" />}
+                    {!unlocked && <Lock className="w-4 h-4 text-muted-foreground" />}
                   </div>
                   <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                  <Badge variant={isUnlocked ? "default" : "outline"} className="mt-2">
+                  <Badge variant={unlocked ? "default" : "outline"} className="mt-2">
                     {achievement.days_required} dias
                   </Badge>
                 </CardContent>
