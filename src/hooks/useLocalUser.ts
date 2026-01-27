@@ -15,9 +15,10 @@ export interface LocalProgress {
 export interface LocalConsumption {
   id: string;
   consumptionType: "alcohol" | "tobacco";
-  drinkType?: "wine" | "beer" | "spirits";
+  drinkType?: "wine" | "beer" | "spirits" | "bottle" | "halfBottle";
   quantity?: number;
   cigaretteCount?: number;
+  cost?: number;
   consumptionDate: string;
   notes?: string;
   createdAt: string;

@@ -8,6 +8,9 @@ import ConsumptionLog from "@/components/ConsumptionLog";
 import HealthBenefits from "@/components/HealthBenefits";
 import ReminderSettings from "@/components/ReminderSettings";
 import ProgressCharts from "@/components/ProgressCharts";
+import DailyMotivation from "@/components/DailyMotivation";
+import RecoveryPhases from "@/components/RecoveryPhases";
+import WellnessTips from "@/components/WellnessTips";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
 
@@ -46,6 +49,9 @@ const Dashboard = () => {
           <p className="text-muted-foreground">Continue firme na sua jornada de liberdade</p>
         </div>
 
+        {/* Daily Motivation */}
+        <DailyMotivation />
+
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2 lg:col-span-1">
             <DaysCounter daysClean={daysClean} />
@@ -73,10 +79,16 @@ const Dashboard = () => {
 
         <ProgressCharts />
 
+        {/* Recovery Phases */}
+        <RecoveryPhases daysClean={daysClean} />
+
         <div className="grid gap-8 md:grid-cols-2">
           <HealthBenefits daysClean={daysClean} />
           <AchievementsList daysClean={daysClean} />
         </div>
+
+        {/* Wellness Tips */}
+        <WellnessTips />
 
         <ReminderSettings />
       </main>
