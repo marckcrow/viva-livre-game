@@ -7,6 +7,7 @@ import ReductionPlan from "@/components/ReductionPlan";
 import ConsumptionLog from "@/components/ConsumptionLog";
 import HealthBenefits from "@/components/HealthBenefits";
 import ReminderSettings from "@/components/ReminderSettings";
+import ProgressCharts from "@/components/ProgressCharts";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
 
@@ -69,6 +70,8 @@ const Dashboard = () => {
           <ReductionPlan />
           <ConsumptionLog />
         </div>
+
+        <ProgressCharts />
 
         <div className="grid gap-8 md:grid-cols-2">
           <HealthBenefits daysClean={daysClean} />
