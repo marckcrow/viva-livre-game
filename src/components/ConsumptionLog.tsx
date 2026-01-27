@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Wine, Beer, Martini, Cigarette, Plus } from "lucide-react";
+import { Wine, Beer, Martini, Cigarette, Plus, DollarSign } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -22,9 +22,10 @@ const tobaccoSchema = z.object({
 const ConsumptionLog = () => {
   const [open, setOpen] = useState(false);
   const [consumptionType, setConsumptionType] = useState<"alcohol" | "tobacco">("alcohol");
-  const [drinkType, setDrinkType] = useState<"wine" | "beer" | "spirits">("wine");
+  const [drinkType, setDrinkType] = useState<"wine" | "beer" | "spirits" | "bottle" | "halfBottle">("wine");
   const [quantity, setQuantity] = useState("");
   const [cigarettes, setCigarettes] = useState("");
+  const [cost, setCost] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -32,9 +33,11 @@ const ConsumptionLog = () => {
   const { resetProgress } = useLocalProgress();
 
   const drinkTypes = {
-    wine: { icon: Wine, label: "Vinho", unit: "taças" },
-    beer: { icon: Beer, label: "Cerveja", unit: "latas" },
-    spirits: { icon: Martini, label: "Destilados", unit: "doses" },
+    wine: { icon: Wine, label: "Vinho", unit: "taças", emoji: "🍷" },
+    beer: { icon: Beer, label: "Cerveja", unit: "latas", emoji: "🍺" },
+    spirits: { icon: Martini, label: "Destilados", unit: "doses", emoji: "🥃" },
+    bottle: { icon: Wine, label: "Garrafa", unit: "garrafas", emoji: "🍾" },
+    halfBottle: { icon: Beer, label: "Meiota", unit: "meiotas", emoji: "🫙" },
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,12 +73,14 @@ const ConsumptionLog = () => {
     setLoading(true);
     try {
       const today = new Date().toISOString().split("T")[0];
+      const costValue = cost ? parseFloat(cost) : undefined;
       
       if (consumptionType === "alcohol") {
         addRecord({
           consumptionType: "alcohol",
           drinkType,
           quantity: parseFloat(quantity),
+          cost: costValue,
           consumptionDate: today,
           notes: notes.trim().substring(0, 500) || undefined,
         });
@@ -83,6 +88,7 @@ const ConsumptionLog = () => {
         addRecord({
           consumptionType: "tobacco",
           cigaretteCount: parseInt(cigarettes),
+          cost: costValue,
           consumptionDate: today,
           notes: notes.trim().substring(0, 500) || undefined,
         });
@@ -99,6 +105,7 @@ const ConsumptionLog = () => {
       setOpen(false);
       setQuantity("");
       setCigarettes("");
+      setCost("");
       setNotes("");
       
       // Reload the page to update progress
@@ -128,24 +135,32 @@ const ConsumptionLog = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-around">
+            <div className="flex justify-around flex-wrap gap-2">
               <div className="text-center">
-                <Wine className="w-8 h-8 mx-auto text-primary/70" />
+                <span className="text-2xl">🍷</span>
                 <p className="text-xs mt-1">Vinho</p>
               </div>
               <div className="text-center">
-                <Beer className="w-8 h-8 mx-auto text-primary/70" />
+                <span className="text-2xl">🍺</span>
                 <p className="text-xs mt-1">Cerveja</p>
               </div>
               <div className="text-center">
-                <Cigarette className="w-8 h-8 mx-auto text-primary/70" />
+                <span className="text-2xl">🍾</span>
+                <p className="text-xs mt-1">Garrafa</p>
+              </div>
+              <div className="text-center">
+                <span className="text-2xl">🫙</span>
+                <p className="text-xs mt-1">Meiota</p>
+              </div>
+              <div className="text-center">
+                <Cigarette className="w-6 h-6 mx-auto text-primary/70" />
                 <p className="text-xs mt-1">Cigarro</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Registrar Consumo</DialogTitle>
           <DialogDescription>
@@ -166,15 +181,15 @@ const ConsumptionLog = () => {
               <div className="space-y-2">
                 <Label>Tipo de Bebida</Label>
                 <div className="grid grid-cols-3 gap-2">
-                  {Object.entries(drinkTypes).map(([type, { icon: Icon, label }]) => (
+                  {Object.entries(drinkTypes).map(([type, { label, emoji }]) => (
                     <Button
                       key={type}
                       type="button"
                       variant={drinkType === type ? "default" : "outline"}
-                      className="flex flex-col h-auto py-4"
+                      className="flex flex-col h-auto py-3"
                       onClick={() => setDrinkType(type as typeof drinkType)}
                     >
-                      <Icon className="w-6 h-6 mb-1" />
+                      <span className="text-xl mb-1">{emoji}</span>
                       <span className="text-xs">{label}</span>
                     </Button>
                   ))}
@@ -217,6 +232,22 @@ const ConsumptionLog = () => {
                 />
               </div>
             </TabsContent>
+
+            <div className="space-y-2">
+              <Label htmlFor="cost" className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                Custo (R$) - opcional
+              </Label>
+              <Input
+                id="cost"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Ex: 15.50"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+              />
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="notes">Observações (opcional)</Label>
