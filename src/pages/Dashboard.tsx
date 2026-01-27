@@ -6,6 +6,7 @@ import AchievementsList from "@/components/AchievementsList";
 import ReductionPlan from "@/components/ReductionPlan";
 import ConsumptionLog from "@/components/ConsumptionLog";
 import HealthBenefits from "@/components/HealthBenefits";
+import ReminderSettings from "@/components/ReminderSettings";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
 
@@ -73,6 +74,8 @@ const Dashboard = () => {
           <HealthBenefits daysClean={daysClean} />
           <AchievementsList daysClean={daysClean} />
         </div>
+
+        <ReminderSettings />
       </main>
     </div>
   );
