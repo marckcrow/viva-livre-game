@@ -11,6 +11,7 @@ import ProgressCharts from "@/components/ProgressCharts";
 import DailyMotivation from "@/components/DailyMotivation";
 import RecoveryPhases from "@/components/RecoveryPhases";
 import WellnessTips from "@/components/WellnessTips";
+import SavingsCalculator from "@/components/SavingsCalculator";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
 
@@ -76,6 +77,9 @@ const Dashboard = () => {
           <ReductionPlan />
           <ConsumptionLog />
         </div>
+
+        {/* Savings Calculator */}
+        <SavingsCalculator />
 
         <ProgressCharts />
 
