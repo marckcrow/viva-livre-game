@@ -152,9 +152,9 @@ const AiTips = ({ daysClean }: AiTipsProps) => {
               {tipsData.tips.map((tip, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-2 p-2 bg-background/50 rounded-lg"
+                  className="flex items-start gap-2 p-2 bg-muted/50 rounded-lg"
                 >
-                  <Lightbulb className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+                  <Lightbulb className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-sm">{tip}</p>
                 </div>
               ))}
