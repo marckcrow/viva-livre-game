@@ -199,6 +199,14 @@ const TestimonyAnalyzer = ({ daysClean }: TestimonyAnalyzerProps) => {
             </div>
 
             <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => shareToWhatsApp(formatAiResponseForShare(aiResponse, "Reflexões sobre minha jornada"))}
+                title="Compartilhar no WhatsApp"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
               <Button variant="outline" onClick={resetForm} className="flex-1">
                 Fechar
               </Button>

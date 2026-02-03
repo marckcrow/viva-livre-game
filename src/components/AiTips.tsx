@@ -123,6 +123,20 @@ const AiTips = ({ daysClean }: AiTipsProps) => {
     }
   };
 
+  const handleShareTips = () => {
+    if (!tipsData) return;
+    
+    let shareText = "🌟 *Viva Livre - Dicas do Dia*\n\n";
+    shareText += "💡 *Dicas:*\n";
+    tipsData.tips.forEach((tip, index) => {
+      shareText += `${index + 1}. ${tip}\n`;
+    });
+    shareText += `\n💚 *Motivação:*\n${tipsData.motivation}`;
+    shareText += "\n\n---\n🚀 Baixe o app Viva Livre e comece sua jornada!";
+    
+    shareToWhatsApp(shareText);
+  };
+
   return (
     <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
       <CardHeader className="pb-3">
@@ -131,19 +145,32 @@ const AiTips = ({ daysClean }: AiTipsProps) => {
             <Sparkles className="w-5 h-5 text-primary" />
             Dicas da IA para Hoje
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={fetchNewTips}
-            disabled={loading}
-            className="h-8"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4" />
+          <div className="flex gap-1">
+            {tipsData && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShareTips}
+                className="h-8"
+                title="Compartilhar no WhatsApp"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
             )}
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchNewTips}
+              disabled={loading}
+              className="h-8"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
