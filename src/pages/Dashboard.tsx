@@ -12,8 +12,11 @@ import DailyMotivation from "@/components/DailyMotivation";
 import RecoveryPhases from "@/components/RecoveryPhases";
 import WellnessTips from "@/components/WellnessTips";
 import SavingsCalculator from "@/components/SavingsCalculator";
+import RelapseTracker from "@/components/RelapseTracker";
+import TestimonyAnalyzer from "@/components/TestimonyAnalyzer";
+import AiTips from "@/components/AiTips";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
-import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
+import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
 const Dashboard = () => {
   const navigate = useNavigate();
