@@ -20,13 +20,21 @@ import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hoo
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { records } = useLocalConsumption();
+  const { records, loadRecords } = useLocalConsumption();
+  const { resetProgress } = useLocalProgress();
   const [daysClean, setDaysClean] = useState(0);
 
   useEffect(() => {
     const days = calculateDaysClean(records);
     setDaysClean(days);
   }, [records]);
+
+  const handleRelapseLogged = () => {
+    resetProgress();
+    loadRecords();
+    const days = calculateDaysClean(records);
+    setDaysClean(days);
+  };
 
   return (
     <div className="min-h-screen bg-background">
