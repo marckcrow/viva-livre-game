@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, RefreshCw, Loader2, Lightbulb, Heart } from "lucide-react";
+import { Sparkles, RefreshCw, Loader2, Lightbulb, Heart, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { shareToWhatsApp } from "@/utils/shareToWhatsApp";
 import { useLocalConsumption, useLocalPlan } from "@/hooks/useLocalUser";
 
 interface AiTipsProps {
