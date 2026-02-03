@@ -5,8 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquareText, Loader2, Sparkles, BookOpen } from "lucide-react";
+import { MessageSquareText, Loader2, Sparkles, BookOpen, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { shareToWhatsApp, formatAiResponseForShare } from "@/utils/shareToWhatsApp";
 
 interface TestimonyAnalyzerProps {
   daysClean: number;
