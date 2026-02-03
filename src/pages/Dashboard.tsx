@@ -92,6 +92,12 @@ const Dashboard = () => {
           <ConsumptionLog />
         </div>
 
+        {/* Relapse & Testimony with AI */}
+        <div className="grid gap-8 md:grid-cols-2">
+          <RelapseTracker daysClean={daysClean} onRelapseLogged={handleRelapseLogged} />
+          <TestimonyAnalyzer daysClean={daysClean} />
+        </div>
+
         {/* Savings Calculator */}
         <SavingsCalculator />
 
