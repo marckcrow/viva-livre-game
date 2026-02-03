@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { AlertTriangle, Heart, Loader2, Sparkles } from "lucide-react";
+import { AlertTriangle, Heart, Loader2, Sparkles, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { shareToWhatsApp, formatAiResponseForShare } from "@/utils/shareToWhatsApp";
 
 interface RelapseTrackerProps {
   daysClean: number;
@@ -231,6 +232,14 @@ const RelapseTracker = ({ daysClean, onRelapseLogged }: RelapseTrackerProps) => 
             </div>
 
             <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => shareToWhatsApp(formatAiResponseForShare(aiResponse, "Apoio após recaída"))}
+                title="Compartilhar no WhatsApp"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
               <Button variant="outline" onClick={resetForm} className="flex-1">
                 Fechar
               </Button>
