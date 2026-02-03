@@ -12,18 +12,29 @@ import DailyMotivation from "@/components/DailyMotivation";
 import RecoveryPhases from "@/components/RecoveryPhases";
 import WellnessTips from "@/components/WellnessTips";
 import SavingsCalculator from "@/components/SavingsCalculator";
+import RelapseTracker from "@/components/RelapseTracker";
+import TestimonyAnalyzer from "@/components/TestimonyAnalyzer";
+import AiTips from "@/components/AiTips";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
-import { useLocalConsumption, calculateDaysClean } from "@/hooks/useLocalUser";
+import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { records } = useLocalConsumption();
+  const { records, loadRecords } = useLocalConsumption();
+  const { resetProgress } = useLocalProgress();
   const [daysClean, setDaysClean] = useState(0);
 
   useEffect(() => {
     const days = calculateDaysClean(records);
     setDaysClean(days);
   }, [records]);
+
+  const handleRelapseLogged = () => {
+    resetProgress();
+    loadRecords();
+    const days = calculateDaysClean(records);
+    setDaysClean(days);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,6 +64,9 @@ const Dashboard = () => {
         {/* Daily Motivation */}
         <DailyMotivation />
 
+        {/* AI Tips */}
+        <AiTips daysClean={daysClean} />
+
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2 lg:col-span-1">
             <DaysCounter daysClean={daysClean} />
@@ -76,6 +90,12 @@ const Dashboard = () => {
         <div className="grid gap-8 md:grid-cols-2">
           <ReductionPlan />
           <ConsumptionLog />
+        </div>
+
+        {/* Relapse & Testimony with AI */}
+        <div className="grid gap-8 md:grid-cols-2">
+          <RelapseTracker daysClean={daysClean} onRelapseLogged={handleRelapseLogged} />
+          <TestimonyAnalyzer daysClean={daysClean} />
         </div>
 
         {/* Savings Calculator */}
