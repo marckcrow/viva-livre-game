@@ -15,6 +15,7 @@ import SavingsCalculator from "@/components/SavingsCalculator";
 import RelapseTracker from "@/components/RelapseTracker";
 import TestimonyAnalyzer from "@/components/TestimonyAnalyzer";
 import AiTips from "@/components/AiTips";
+import CrisisChatButton from "@/components/CrisisChatButton";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
