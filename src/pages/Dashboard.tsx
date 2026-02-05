@@ -116,6 +116,9 @@ const Dashboard = () => {
         <WellnessTips />
 
         <ReminderSettings />
+
+        {/* Crisis Chat Button */}
+        <CrisisChatButton />
       </main>
     </div>
   );
