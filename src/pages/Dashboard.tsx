@@ -16,6 +16,7 @@ import RelapseTracker from "@/components/RelapseTracker";
 import TestimonyAnalyzer from "@/components/TestimonyAnalyzer";
 import AiTips from "@/components/AiTips";
 import CrisisChatButton from "@/components/CrisisChatButton";
+import DonationImpact from "@/components/DonationImpact";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
@@ -111,6 +112,9 @@ const Dashboard = () => {
           <HealthBenefits daysClean={daysClean} />
           <AchievementsList daysClean={daysClean} />
         </div>
+
+        {/* Donation Impact */}
+        <DonationImpact />
 
         {/* Wellness Tips */}
         <WellnessTips />
