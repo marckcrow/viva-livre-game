@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Heart, Loader2, CheckCircle2, XCircle, Shield } from "lucide-react";
+import { ArrowLeft, Heart, Loader2, CheckCircle2, XCircle, Shield, CalendarHeart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -22,6 +22,7 @@ const Donate = () => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecurring, setIsRecurring] = useState(false);
 
   const getAmountInCents = (): number | null => {
     if (selectedAmount) return selectedAmount;
@@ -40,7 +41,7 @@ const Donate = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-donation", {
-        body: { amount },
+        body: { amount, recurring: isRecurring },
       });
 
       if (error) throw error;
@@ -114,9 +115,37 @@ const Donate = () => {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {/* Donation type toggle */}
+            <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg">
+              <Button
+                variant={!isRecurring ? "default" : "ghost"}
+                className="h-11 rounded-md"
+                onClick={() => setIsRecurring(false)}
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                Única
+              </Button>
+              <Button
+                variant={isRecurring ? "default" : "ghost"}
+                className="h-11 rounded-md"
+                onClick={() => setIsRecurring(true)}
+              >
+                <CalendarHeart className="w-4 h-4 mr-2" />
+                Mensal
+              </Button>
+            </div>
+
+            {isRecurring && (
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-sm text-center">
+                💚 Doação recorrente — você será cobrado mensalmente e pode cancelar a qualquer momento.
+              </div>
+            )}
+
             {/* Suggested amounts */}
             <div className="space-y-3">
-              <p className="text-sm font-medium text-muted-foreground">Escolha um valor sugerido:</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Escolha um valor{isRecurring ? " mensal" : " sugerido"}:
+              </p>
               <div className="grid grid-cols-2 gap-3">
                 {SUGGESTED_AMOUNTS.map((amt) => (
                   <Button
@@ -129,6 +158,7 @@ const Donate = () => {
                     }}
                   >
                     {amt.label}
+                    {isRecurring && <span className="text-xs ml-1 opacity-70">/mês</span>}
                   </Button>
                 ))}
               </div>
@@ -136,7 +166,9 @@ const Donate = () => {
 
             {/* Custom amount */}
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Ou digite um valor livre (mín. R$ 5):</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Ou digite um valor livre (mín. R$ 5){isRecurring ? " /mês" : ""}:
+              </p>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-semibold text-muted-foreground">R$</span>
                 <Input
@@ -163,16 +195,23 @@ const Donate = () => {
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              ) : isRecurring ? (
+                <CalendarHeart className="w-5 h-5 mr-2" />
               ) : (
                 <Heart className="w-5 h-5 mr-2" />
               )}
-              {isLoading ? "Processando..." : "Doar agora"}
+              {isLoading
+                ? "Processando..."
+                : isRecurring
+                ? "Doar mensalmente"
+                : "Doar agora"}
             </Button>
 
             {/* Info */}
             <div className="text-center space-y-2 text-sm text-muted-foreground">
               <p>💚 Qualquer valor faz a diferença</p>
               <p>🔒 Pagamento seguro via Stripe</p>
+              {isRecurring && <p>🔄 Cancele a qualquer momento</p>}
               <p>🙏 Muito obrigado pelo seu apoio!</p>
             </div>
 
