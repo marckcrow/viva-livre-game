@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, TrendingUp, CalendarHeart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart, Users, TrendingUp, CalendarHeart, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface DonationStats {
   totalAmountCents: number;
@@ -13,21 +15,37 @@ interface DonationStats {
 const DonationImpact = () => {
   const [stats, setStats] = useState<DonationStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchStats = async (forceRefresh = false) => {
+    try {
+      const { data, error } = await supabase.functions.invoke("donation-stats", {
+        body: forceRefresh ? { refresh: true } : undefined,
+      });
+      if (error) throw error;
+      setStats(data);
+      if (forceRefresh) {
+        toast({ title: "Estatísticas atualizadas!" });
+      }
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas de doações:", err);
+      if (forceRefresh) {
+        toast({ title: "Erro ao atualizar", variant: "destructive" });
+      }
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("donation-stats");
-        if (error) throw error;
-        setStats(data);
-      } catch (err) {
-        console.error("Erro ao buscar estatísticas de doações:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStats();
   }, []);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchStats(true);
+  };
 
   const formatCurrency = (cents: number) =>
     new Intl.NumberFormat("pt-BR", {
