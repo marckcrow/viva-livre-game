@@ -2,3 +2,9 @@ project_id = "kcfiilshvgzzlmxsytmx"
 
 [functions.create-donation]
 verify_jwt = false
+
+[functions.customer-portal]
+verify_jwt = false
+
+[functions.donation-stats]
+verify_jwt = false
