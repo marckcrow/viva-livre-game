@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, Heart, Loader2, Sparkles, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { shareToWhatsApp, formatAiResponseForShare } from "@/utils/shareToWhatsApp";
+import { useLocalConsumption } from "@/hooks/useLocalUser";
 
 interface RelapseTrackerProps {
   daysClean: number;
@@ -26,6 +27,7 @@ const RelapseTracker = ({ daysClean, onRelapseLogged }: RelapseTrackerProps) => 
   const [aiResponse, setAiResponse] = useState("");
   const [showAiResponse, setShowAiResponse] = useState(false);
   const { toast } = useToast();
+  const { addRecord } = useLocalConsumption();
 
   const triggers = [
     { value: "stress", label: "Estresse" },
@@ -59,6 +61,19 @@ const RelapseTracker = ({ daysClean, onRelapseLogged }: RelapseTrackerProps) => 
     setLoading(true);
 
     try {
+      // Register the relapse as a consumption event so days clean resets to 0
+      const substanceMap: Record<string, "alcohol" | "tobacco"> = {
+        alcohol: "alcohol",
+        tobacco: "tobacco",
+        both: "alcohol",
+      };
+      addRecord({
+        consumptionType: substanceMap[substance] || "alcohol",
+        consumptionDate: new Date().toISOString(),
+        notes: `Recaída — Gatilho: ${triggers.find(t => t.value === trigger)?.label}. Sentimento: ${feelings.find(f => f.value === feeling)?.label}.${amount ? ` Quantidade: ${amount}` : ""}`,
+        quantity: 1,
+      });
+
       const { data, error } = await supabase.functions.invoke("ai-analysis", {
         body: {
           type: "relapse",
