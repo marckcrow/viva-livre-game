@@ -7,12 +7,34 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// In-memory cache (persists across invocations while the isolate is warm)
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let cache: { data: unknown; expiresAt: number } | null = null;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const url = new URL(req.url);
+    const forceRefresh = url.searchParams.get("refresh") === "true";
+    const now = Date.now();
+
+    if (!forceRefresh && cache && cache.expiresAt > now) {
+      return new Response(
+        JSON.stringify({ ...(cache.data as object), cached: true }),
+        {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+            "Cache-Control": `public, max-age=${Math.floor((cache.expiresAt - now) / 1000)}`,
+          },
+          status: 200,
+        }
+      );
+    }
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
@@ -41,18 +63,23 @@ serve(async (req) => {
       limit: 100,
     });
 
-    return new Response(
-      JSON.stringify({
-        totalAmountCents: totalAmount,
-        totalDonations: successfulCharges.length,
-        totalDonors,
-        activeSubscriptions: subscriptions.data.length,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
-    );
+    const payload = {
+      totalAmountCents: totalAmount,
+      totalDonations: successfulCharges.length,
+      totalDonors,
+      activeSubscriptions: subscriptions.data.length,
+    };
+
+    cache = { data: payload, expiresAt: now + CACHE_TTL_MS };
+
+    return new Response(JSON.stringify({ ...payload, cached: false }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+        "Cache-Control": `public, max-age=${CACHE_TTL_MS / 1000}`,
+      },
+      status: 200,
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     return new Response(JSON.stringify({ error: msg }), {
