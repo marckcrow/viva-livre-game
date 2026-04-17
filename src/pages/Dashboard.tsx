@@ -17,6 +17,7 @@ import TestimonyAnalyzer from "@/components/TestimonyAnalyzer";
 import AiTips from "@/components/AiTips";
 import CrisisChatButton from "@/components/CrisisChatButton";
 import DonationImpact from "@/components/DonationImpact";
+import ManageSubscription from "@/components/ManageSubscription";
 import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
@@ -115,6 +116,9 @@ const Dashboard = () => {
 
         {/* Donation Impact */}
         <DonationImpact />
+
+        {/* Manage Subscription */}
+        <ManageSubscription />
 
         {/* Wellness Tips */}
         <WellnessTips />
