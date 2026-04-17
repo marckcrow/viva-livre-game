@@ -107,9 +107,20 @@ const DonationImpact = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Heart className="w-5 h-5 text-primary" />
-          Impacto das Doações
+        <CardTitle className="flex items-center justify-between gap-2">
+          <span className="flex items-center gap-2">
+            <Heart className="w-5 h-5 text-primary" />
+            Impacto das Doações
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            aria-label="Atualizar estatísticas"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
