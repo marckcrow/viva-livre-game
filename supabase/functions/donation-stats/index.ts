@@ -18,7 +18,15 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const forceRefresh = url.searchParams.get("refresh") === "true";
+    let forceRefresh = url.searchParams.get("refresh") === "true";
+    if (!forceRefresh && req.method === "POST") {
+      try {
+        const body = await req.json();
+        if (body?.refresh === true) forceRefresh = true;
+      } catch {
+        // ignore
+      }
+    }
     const now = Date.now();
 
     if (!forceRefresh && cache && cache.expiresAt > now) {
