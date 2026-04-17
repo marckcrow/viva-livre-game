@@ -67,7 +67,14 @@ export function useLocalProgress() {
       const now = new Date();
       const diffTime = Math.abs(now.getTime() - startDate.getTime());
       const daysClean = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      setProgress({ ...data, daysClean });
+      // Update lastCheckIn so we always remember the user's last access
+      const updated: LocalProgress = {
+        ...data,
+        daysClean,
+        lastCheckIn: now.toISOString(),
+      };
+      localStorage.setItem(LOCAL_PROGRESS_KEY, JSON.stringify(updated));
+      setProgress(updated);
     } else {
       // Create initial progress
       const initial: LocalProgress = {
