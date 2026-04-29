@@ -19,6 +19,12 @@ const tobaccoSchema = z.object({
   cigarettes: z.number().int().min(1).max(100),
 });
 
+// Helper: format Date to "YYYY-MM-DDTHH:mm" for datetime-local input (in local time)
+const toLocalDatetimeInput = (d: Date) => {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 const ConsumptionLog = () => {
   const [open, setOpen] = useState(false);
   const [consumptionType, setConsumptionType] = useState<"alcohol" | "tobacco">("alcohol");
@@ -27,10 +33,17 @@ const ConsumptionLog = () => {
   const [cigarettes, setCigarettes] = useState("");
   const [cost, setCost] = useState("");
   const [notes, setNotes] = useState("");
+  const [consumedAt, setConsumedAt] = useState(toLocalDatetimeInput(new Date()));
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { addRecord } = useLocalConsumption();
   const { resetProgress } = useLocalProgress();
+
+  // Refresh "now" each time the dialog opens
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) setConsumedAt(toLocalDatetimeInput(new Date()));
+  };
 
   const drinkTypes = {
     wine: { icon: Wine, label: "Vinho", unit: "taças", emoji: "🍷" },
@@ -72,16 +85,20 @@ const ConsumptionLog = () => {
 
     setLoading(true);
     try {
-      const today = new Date().toISOString().split("T")[0];
+      // Parse the chosen date/time. If invalid or in the future, fall back to now.
+      const parsed = new Date(consumedAt);
+      const now = new Date();
+      const when = isNaN(parsed.getTime()) || parsed > now ? now : parsed;
+      const isoWhen = when.toISOString();
       const costValue = cost ? parseFloat(cost) : undefined;
-      
+
       if (consumptionType === "alcohol") {
         addRecord({
           consumptionType: "alcohol",
           drinkType,
           quantity: parseFloat(quantity),
           cost: costValue,
-          consumptionDate: today,
+          consumptionDate: isoWhen,
           notes: notes.trim().substring(0, 500) || undefined,
         });
       } else {
@@ -89,7 +106,7 @@ const ConsumptionLog = () => {
           consumptionType: "tobacco",
           cigaretteCount: parseInt(cigarettes),
           cost: costValue,
-          consumptionDate: today,
+          consumptionDate: isoWhen,
           notes: notes.trim().substring(0, 500) || undefined,
         });
       }
