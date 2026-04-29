@@ -275,13 +275,13 @@ const History = () => {
                         }`}>
                           <Icon className="h-5 w-5" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <Badge variant={record.consumptionType === "alcohol" ? "default" : "destructive"}>
                               {record.consumptionType === "alcohol" ? "Álcool" : "Tabaco"}
                             </Badge>
                             <span className="text-sm text-muted-foreground">
-                              {format(new Date(record.consumptionDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                              {format(new Date(record.consumptionDate), "dd 'de' MMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
                             </span>
                           </div>
                           {record.consumptionType === "alcohol" ? (
@@ -290,15 +290,41 @@ const History = () => {
                               {record.drinkType === "wine" && "taças de vinho"}
                               {record.drinkType === "beer" && "latas de cerveja"}
                               {record.drinkType === "spirits" && "doses de destilados"}
+                              {record.drinkType === "bottle" && "garrafas"}
+                              {record.drinkType === "halfBottle" && "meiotas"}
                             </p>
                           ) : (
                             <p className="text-sm">
                               <span className="font-medium">{record.cigaretteCount}</span> cigarros
                             </p>
                           )}
+                          {record.cost !== undefined && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              R$ {record.cost.toFixed(2)}
+                            </p>
+                          )}
                           {record.notes && (
                             <p className="text-sm text-muted-foreground mt-1">{record.notes}</p>
                           )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEditing(record)}
+                            aria-label="Editar registro"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeleting(record)}
+                            aria-label="Excluir registro"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     );
