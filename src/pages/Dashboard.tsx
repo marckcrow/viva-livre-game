@@ -11,6 +11,7 @@ import ProgressCharts from "@/components/ProgressCharts";
 import DailyMotivation from "@/components/DailyMotivation";
 import RecoveryPhases from "@/components/RecoveryPhases";
 import WellnessTips from "@/components/WellnessTips";
+import GuidedPrayer from "@/components/GuidedPrayer";
 import SavingsCalculator from "@/components/SavingsCalculator";
 import RelapseTracker from "@/components/RelapseTracker";
 import TestimonyAnalyzer from "@/components/TestimonyAnalyzer";
@@ -119,6 +120,9 @@ const Dashboard = () => {
 
         {/* Manage Subscription */}
         <ManageSubscription />
+
+        {/* Guided Prayer */}
+        <GuidedPrayer />
 
         {/* Wellness Tips */}
         <WellnessTips />
