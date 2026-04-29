@@ -139,7 +139,7 @@ const ConsumptionLog = () => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Card className="cursor-pointer hover:border-primary/50 transition-colors">
           <CardHeader>
