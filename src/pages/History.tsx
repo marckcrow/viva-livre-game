@@ -5,18 +5,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Wine, Beer, Martini, Cigarette, TrendingDown, TrendingUp } from "lucide-react";
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { ArrowLeft, Wine, Beer, Martini, Cigarette, TrendingDown, TrendingUp, Pencil, Trash2 } from "lucide-react";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useLocalConsumption, LocalConsumption } from "@/hooks/useLocalUser";
+import EditConsumptionDialog from "@/components/EditConsumptionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const History = () => {
   const navigate = useNavigate();
-  const { records } = useLocalConsumption();
+  const { records, deleteRecord } = useLocalConsumption();
   const [filteredRecords, setFilteredRecords] = useState<LocalConsumption[]>([]);
   const [filterType, setFilterType] = useState<"all" | "alcohol" | "tobacco">("all");
   const [dateRange, setDateRange] = useState<"all" | "week" | "month">("all");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [editing, setEditing] = useState<LocalConsumption | null>(null);
+  const [deleting, setDeleting] = useState<LocalConsumption | null>(null);
 
   useEffect(() => {
     applyFilters();
@@ -50,11 +64,19 @@ const History = () => {
 
     // Filter by specific date
     if (selectedDate) {
-      const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
-      filtered = filtered.filter((r) => r.consumptionDate === selectedDateStr);
+      filtered = filtered.filter((r) => isSameDay(new Date(r.consumptionDate), selectedDate));
     }
 
     setFilteredRecords(filtered);
+  };
+
+  const handleDelete = () => {
+    if (!deleting) return;
+    deleteRecord(deleting.id);
+    toast.success("Registro excluído", {
+      description: "Sua contagem de dias livres foi recalculada automaticamente.",
+    });
+    setDeleting(null);
   };
 
   const getStats = () => {
@@ -253,13 +275,13 @@ const History = () => {
                         }`}>
                           <Icon className="h-5 w-5" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <Badge variant={record.consumptionType === "alcohol" ? "default" : "destructive"}>
                               {record.consumptionType === "alcohol" ? "Álcool" : "Tabaco"}
                             </Badge>
                             <span className="text-sm text-muted-foreground">
-                              {format(new Date(record.consumptionDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                              {format(new Date(record.consumptionDate), "dd 'de' MMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
                             </span>
                           </div>
                           {record.consumptionType === "alcohol" ? (
@@ -268,15 +290,41 @@ const History = () => {
                               {record.drinkType === "wine" && "taças de vinho"}
                               {record.drinkType === "beer" && "latas de cerveja"}
                               {record.drinkType === "spirits" && "doses de destilados"}
+                              {record.drinkType === "bottle" && "garrafas"}
+                              {record.drinkType === "halfBottle" && "meiotas"}
                             </p>
                           ) : (
                             <p className="text-sm">
                               <span className="font-medium">{record.cigaretteCount}</span> cigarros
                             </p>
                           )}
+                          {record.cost !== undefined && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              R$ {record.cost.toFixed(2)}
+                            </p>
+                          )}
                           {record.notes && (
                             <p className="text-sm text-muted-foreground mt-1">{record.notes}</p>
                           )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEditing(record)}
+                            aria-label="Editar registro"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeleting(record)}
+                            aria-label="Excluir registro"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     );
@@ -287,6 +335,32 @@ const History = () => {
           </Card>
         </div>
       </div>
+
+      {editing && (
+        <EditConsumptionDialog
+          record={editing}
+          open={!!editing}
+          onOpenChange={(o) => !o && setEditing(null)}
+        />
+      )}
+
+      <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir este registro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Sua contagem de dias livres e medalhas
+              serão recalculadas com base nos registros restantes.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -126,6 +126,18 @@ export function useLocalConsumption() {
     return newRecord;
   };
 
+  const updateRecord = (id: string, updates: Partial<Omit<LocalConsumption, "id" | "createdAt">>) => {
+    const updated = records.map((r) => (r.id === id ? { ...r, ...updates } : r));
+    localStorage.setItem(LOCAL_CONSUMPTION_KEY, JSON.stringify(updated));
+    setRecords(updated);
+  };
+
+  const deleteRecord = (id: string) => {
+    const updated = records.filter((r) => r.id !== id);
+    localStorage.setItem(LOCAL_CONSUMPTION_KEY, JSON.stringify(updated));
+    setRecords(updated);
+  };
+
   const getLastConsumptionDate = (): Date | null => {
     if (records.length === 0) return null;
     const sorted = [...records].sort(
@@ -134,7 +146,7 @@ export function useLocalConsumption() {
     return new Date(sorted[0].consumptionDate);
   };
 
-  return { records, addRecord, loadRecords, getLastConsumptionDate };
+  return { records, addRecord, updateRecord, deleteRecord, loadRecords, getLastConsumptionDate };
 }
 
 export function useLocalAchievements() {
