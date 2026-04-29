@@ -251,6 +251,21 @@ const ConsumptionLog = () => {
             </TabsContent>
 
             <div className="space-y-2">
+              <Label htmlFor="consumedAt">Quando aconteceu?</Label>
+              <Input
+                id="consumedAt"
+                type="datetime-local"
+                value={consumedAt}
+                max={toLocalDatetimeInput(new Date())}
+                onChange={(e) => setConsumedAt(e.target.value)}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Use a data e hora reais para manter a contagem dos seus dias precisa.
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="cost" className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
                 Custo (R$) - opcional
