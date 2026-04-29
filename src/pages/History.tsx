@@ -5,18 +5,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Wine, Beer, Martini, Cigarette, TrendingDown, TrendingUp } from "lucide-react";
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { ArrowLeft, Wine, Beer, Martini, Cigarette, TrendingDown, TrendingUp, Pencil, Trash2 } from "lucide-react";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useLocalConsumption, LocalConsumption } from "@/hooks/useLocalUser";
+import EditConsumptionDialog from "@/components/EditConsumptionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const History = () => {
   const navigate = useNavigate();
-  const { records } = useLocalConsumption();
+  const { records, deleteRecord } = useLocalConsumption();
   const [filteredRecords, setFilteredRecords] = useState<LocalConsumption[]>([]);
   const [filterType, setFilterType] = useState<"all" | "alcohol" | "tobacco">("all");
   const [dateRange, setDateRange] = useState<"all" | "week" | "month">("all");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [editing, setEditing] = useState<LocalConsumption | null>(null);
+  const [deleting, setDeleting] = useState<LocalConsumption | null>(null);
 
   useEffect(() => {
     applyFilters();
@@ -50,11 +64,19 @@ const History = () => {
 
     // Filter by specific date
     if (selectedDate) {
-      const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
-      filtered = filtered.filter((r) => r.consumptionDate === selectedDateStr);
+      filtered = filtered.filter((r) => isSameDay(new Date(r.consumptionDate), selectedDate));
     }
 
     setFilteredRecords(filtered);
+  };
+
+  const handleDelete = () => {
+    if (!deleting) return;
+    deleteRecord(deleting.id);
+    toast.success("Registro excluído", {
+      description: "Sua contagem de dias livres foi recalculada automaticamente.",
+    });
+    setDeleting(null);
   };
 
   const getStats = () => {
