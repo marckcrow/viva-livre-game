@@ -61,6 +61,18 @@ Por favor, forneça:
 2. Áreas que merecem atenção
 3. Sugestões personalizadas para o próximo passo na jornada
 4. Uma reflexão inspiradora baseada no que foi compartilhado`;
+    } else if (type === "journal") {
+      systemPrompt = `Você é um conselheiro emocional, empático e laico, com sensibilidade espiritual cristã.
+Pode citar eventualmente passagens da Bíblia católica (com referência) quando trouxerem conforto, sem impor religião.
+Acolha sentimentos sem julgar. Nunca dê conselhos médicos. Use português brasileiro, tom humano e curto (máx. 6 parágrafos).`;
+      userPrompt = `Entrada do diário (humor: ${data.mood || "n/d"}):
+"${data.content}"
+
+Responda com:
+1. Acolhimento sincero do que foi sentido
+2. Um pequeno insight ou perspectiva
+3. Uma sugestão prática e gentil para hoje
+4. (Opcional) Um versículo curto que conforte, com referência`;
     } else if (type === "daily_tips") {
       systemPrompt = `Você é um coach de bem-estar especializado em recuperação de dependências.
 Forneça dicas práticas, motivacionais e baseadas em evidências.
