@@ -56,6 +56,10 @@ const Dashboard = () => {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button onClick={() => navigate("/community")} variant="ghost" size="sm">
+              <Users className="w-4 h-4 mr-2" />
+              Comunidade
+            </Button>
             <Button onClick={() => navigate("/history")} variant="ghost" size="sm">
               <HistoryIcon className="w-4 h-4 mr-2" />
               Histórico
@@ -76,6 +80,12 @@ const Dashboard = () => {
         {/* AI Tips */}
         <AiTips daysClean={daysClean} />
 
+        {/* Real-time counter + Level */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <RealtimeCounter />
+          <LevelCard />
+        </div>
+
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2 lg:col-span-1">
             <DaysCounter daysClean={daysClean} />
@@ -94,6 +104,12 @@ const Dashboard = () => {
               </span>
             </Button>
           </div>
+        </div>
+
+        {/* Journal + Dreams */}
+        <div className="grid gap-8 md:grid-cols-2">
+          <EmotionalJournal />
+          <DreamsBoard />
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
@@ -137,6 +153,9 @@ const Dashboard = () => {
         {/* Crisis Chat Button */}
         <CrisisChatButton />
       </main>
+
+      {/* Emergency floating button */}
+      <EmergencyButton />
     </div>
   );
 };
