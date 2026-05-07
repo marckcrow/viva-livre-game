@@ -41,6 +41,71 @@ export type Database = {
         }
         Relationships: []
       }
+      community_posts: {
+        Row: {
+          alias: string
+          category: string
+          content: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          moderation_note: string | null
+          user_id: string
+        }
+        Insert: {
+          alias?: string
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          moderation_note?: string | null
+          user_id: string
+        }
+        Update: {
+          alias?: string
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          moderation_note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consumption_log: {
         Row: {
           cigarette_count: number | null
