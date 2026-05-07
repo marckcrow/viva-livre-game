@@ -19,7 +19,12 @@ import AiTips from "@/components/AiTips";
 import CrisisChatButton from "@/components/CrisisChatButton";
 import DonationImpact from "@/components/DonationImpact";
 import ManageSubscription from "@/components/ManageSubscription";
-import { Heart, Sparkles, History as HistoryIcon } from "lucide-react";
+import RealtimeCounter from "@/components/RealtimeCounter";
+import LevelCard from "@/components/LevelCard";
+import EmotionalJournal from "@/components/EmotionalJournal";
+import DreamsBoard from "@/components/DreamsBoard";
+import EmergencyButton from "@/components/EmergencyButton";
+import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
 const Dashboard = () => {
