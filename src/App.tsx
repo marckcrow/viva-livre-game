@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Donate from "./pages/Donate";
 import History from "./pages/History";
 import Transparency from "./pages/Transparency";
+import Auth from "./pages/Auth";
+import Community from "./pages/Community";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,7 +26,8 @@ const App = () => (
           <Route path="/donate" element={<Donate />} />
           <Route path="/history" element={<History />} />
           <Route path="/transparencia" element={<Transparency />} />
-          <Route path="/auth" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/community" element={<Community />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
