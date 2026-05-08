@@ -24,6 +24,7 @@ import LevelCard from "@/components/LevelCard";
 import EmotionalJournal from "@/components/EmotionalJournal";
 import DreamsBoard from "@/components/DreamsBoard";
 import EmergencyButton from "@/components/EmergencyButton";
+import HabitsTracker from "@/components/HabitsTracker";
 import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
@@ -111,6 +112,9 @@ const Dashboard = () => {
           <EmotionalJournal />
           <DreamsBoard />
         </div>
+
+        {/* Healthy habits */}
+        <HabitsTracker />
 
         <div className="grid gap-8 md:grid-cols-2">
           <ReductionPlan />
