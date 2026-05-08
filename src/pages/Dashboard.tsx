@@ -26,6 +26,7 @@ import DreamsBoard from "@/components/DreamsBoard";
 import EmergencyButton from "@/components/EmergencyButton";
 import HabitsTracker from "@/components/HabitsTracker";
 import HabitsCalendar from "@/components/HabitsCalendar";
+import InstallAppButton from "@/components/InstallAppButton";
 import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
