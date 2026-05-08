@@ -26,6 +26,7 @@ import DreamsBoard from "@/components/DreamsBoard";
 import EmergencyButton from "@/components/EmergencyButton";
 import HabitsTracker from "@/components/HabitsTracker";
 import HabitsCalendar from "@/components/HabitsCalendar";
+import InstallAppButton from "@/components/InstallAppButton";
 import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
@@ -58,6 +59,7 @@ const Dashboard = () => {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <InstallAppButton variant="outline" />
             <Button onClick={() => navigate("/community")} variant="ghost" size="sm">
               <Users className="w-4 h-4 mr-2" />
               Comunidade
