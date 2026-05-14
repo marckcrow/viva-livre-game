@@ -20,7 +20,7 @@ const InstallBanner = () => {
     if (dismissed === "true") return;
 
     const standalone =
-      window.matchMedia("(display-mode: standalone)"matches ||
+      window.matchMedia("(display-mode: standalone)").matches ||
       // @ts-expect-error iOS Safari
       window.navigator.standalone === true;
     setIsStandalone(standalone);
