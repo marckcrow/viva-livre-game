@@ -165,6 +165,9 @@ const Dashboard = () => {
 
       {/* Emergency floating button */}
       <EmergencyButton />
+
+      {/* PWA install banner */}
+      <InstallBanner />
     </div>
   );
 };
