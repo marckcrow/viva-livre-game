@@ -27,6 +27,7 @@ import EmergencyButton from "@/components/EmergencyButton";
 import HabitsTracker from "@/components/HabitsTracker";
 import HabitsCalendar from "@/components/HabitsCalendar";
 import InstallAppButton from "@/components/InstallAppButton";
+import InstallBanner from "@/components/InstallBanner";
 import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
