@@ -96,6 +96,37 @@ Contexto adicional:
 
 Identifique até 4 gatilhos recorrentes, até 3 padrões emocionais e até 3 alertas preventivos com ação concreta.
 Calibre o riskLevel: high se humor predominantemente "low/bad" + recaídas recentes; medium se sinais mistos; low se estável/positivo.`;
+    } else if (type === "action_plan") {
+      systemPrompt = `Você é um especialista em prevenção de recaídas em álcool e tabaco, treinado em terapia cognitivo-comportamental e técnicas de regulação emocional (grounding, respiração, urge surfing).
+Sua missão: gerar um PLANO DE AÇÃO IMEDIATO, prático e executável AGORA, para alguém que acabou de receber um alerta de risco.
+Tom: humano, calmo, direto. Português brasileiro. Sem julgamento. Foco em ação concreta nos próximos minutos e horas.
+RETORNE APENAS JSON VÁLIDO no formato:
+{
+  "title": "título curto e acolhedor do plano",
+  "intro": "1-2 frases que acalmam e contextualizam por que esse plano existe agora",
+  "immediateSteps": [
+    { "minutes": 1, "title": "ação curta", "description": "instrução clara e executável em poucos minutos", "icon": "breath|water|move|call|write|distract|ground" }
+  ],
+  "nextHours": [
+    { "title": "estratégia para as próximas horas", "description": "instrução prática" }
+  ],
+  "avoid": ["situação ou pensamento a evitar agora"],
+  "emergencyContacts": [
+    { "name": "CVV - Centro de Valorização da Vida", "contact": "188", "when": "se a vontade ficar incontrolável ou houver pensamentos de se machucar" }
+  ],
+  "mantra": "frase curta para repetir mentalmente"
+}`;
+      userPrompt = `Contexto do alerta de risco recebido:
+
+Nível de risco: ${data.riskLevel || "medium"}
+Resumo emocional: ${data.summary || "n/d"}
+Principais gatilhos identificados: ${(data.triggers || []).map((t: any) => `${t.name} (${t.severity})`).join(", ") || "n/d"}
+Padrões observados: ${(data.patterns || []).join("; ") || "n/d"}
+Alertas preventivos já apontados: ${(data.alerts || []).map((a: any) => a.title).join("; ") || "n/d"}
+Dias limpos: ${data.daysClean ?? "n/d"}
+Recaídas recentes (30d): ${data.recentRelapses ?? 0}
+
+Gere de 4 a 6 passos imediatos (cada um executável em 1 a 10 minutos), 2 a 4 estratégias para as próximas horas, 2 a 3 itens a evitar agora, e 1 a 2 contatos de emergência apropriados ao Brasil (inclua CVV 188 quando o risco for high). Seja específico aos gatilhos informados, não genérico.`;
     } else if (type === "daily_tips") {
       systemPrompt = `Você é um coach de bem-estar especializado em recuperação de dependências.
 Forneça dicas práticas, motivacionais e baseadas em evidências.

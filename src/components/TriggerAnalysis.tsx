@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, ShieldAlert, Sparkles, Loader2, TrendingDown, Activity, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useJournal, moodLabel } from "@/hooks/useJournal";
+import RiskActionPlan from "./RiskActionPlan";
 import { format } from "date-fns";
 
 interface TriggerItem { name: string; evidence: string; severity: "low" | "medium" | "high"; }
@@ -113,6 +114,16 @@ const TriggerAnalysis = () => {
                 <p className="text-sm">{analysis.summary}</p>
               </div>
             </div>
+
+            <RiskActionPlan
+              triggerAnalysis={{
+                riskLevel: analysis.riskLevel,
+                summary: analysis.summary,
+                triggers: analysis.triggers || [],
+                patterns: analysis.patterns || [],
+                alerts: analysis.alerts || [],
+              }}
+            />
 
             {analysis.triggers?.length > 0 && (
               <div className="space-y-2">
