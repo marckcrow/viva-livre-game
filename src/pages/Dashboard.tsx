@@ -25,6 +25,7 @@ import EmotionalJournal from "@/components/EmotionalJournal";
 import DreamsBoard from "@/components/DreamsBoard";
 import EmergencyButton from "@/components/EmergencyButton";
 import HabitsTracker from "@/components/HabitsTracker";
+import TriggerAnalysis from "@/components/TriggerAnalysis";
 import HabitsCalendar from "@/components/HabitsCalendar";
 import InstallAppButton from "@/components/InstallAppButton";
 import InstallBanner from "@/components/InstallBanner";
