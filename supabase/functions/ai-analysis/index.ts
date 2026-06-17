@@ -73,6 +73,29 @@ Responda com:
 2. Um pequeno insight ou perspectiva
 3. Uma sugestão prática e gentil para hoje
 4. (Opcional) Um versículo curto que conforte, com referência`;
+    } else if (type === "triggers") {
+      systemPrompt = `Você é um psicólogo especializado em prevenção de recaídas em dependências de álcool e tabaco.
+Analise padrões emocionais do diário do usuário para identificar gatilhos de risco e propor alertas preventivos.
+Seja empático, prático e direto. Português brasileiro.
+RETORNE APENAS JSON VÁLIDO no formato:
+{
+  "riskLevel": "low" | "medium" | "high",
+  "summary": "1-2 frases sobre o estado emocional atual",
+  "triggers": [{ "name": "string curta", "evidence": "trecho ou padrão observado", "severity": "low|medium|high" }],
+  "patterns": ["observação 1", "observação 2"],
+  "alerts": [{ "title": "alerta preventivo", "action": "ação concreta sugerida" }],
+  "affirmation": "frase curta de encorajamento"
+}`;
+      userPrompt = `Analise as últimas entradas do diário emocional (mais recentes primeiro):
+
+${(data.entries || []).map((e: any, i: number) => `[${i + 1}] ${e.date} | humor: ${e.mood}\n${e.content}`).join("\n\n")}
+
+Contexto adicional:
+- Dias limpos atuais: ${data.daysClean ?? "n/d"}
+- Recaídas recentes (30d): ${data.recentRelapses ?? 0}
+
+Identifique até 4 gatilhos recorrentes, até 3 padrões emocionais e até 3 alertas preventivos com ação concreta.
+Calibre o riskLevel: high se humor predominantemente "low/bad" + recaídas recentes; medium se sinais mistos; low se estável/positivo.`;
     } else if (type === "daily_tips") {
       systemPrompt = `Você é um coach de bem-estar especializado em recuperação de dependências.
 Forneça dicas práticas, motivacionais e baseadas em evidências.
