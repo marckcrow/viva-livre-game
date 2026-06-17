@@ -118,6 +118,9 @@ const Dashboard = () => {
           <DreamsBoard />
         </div>
 
+        {/* Trigger analysis from journal */}
+        <TriggerAnalysis />
+
         {/* Healthy habits */}
         <HabitsTracker />
         <HabitsCalendar />
