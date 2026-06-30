@@ -126,6 +126,7 @@ const RiskActionPlan = ({ triggerAnalysis }: Props) => {
       const jsonStr = raw.replace(/^```json\s*|\s*```$/g, "").match(/\{[\s\S]*\}/)?.[0];
       if (!jsonStr) throw new Error("Resposta inválida da IA");
       const parsed = JSON.parse(jsonStr);
+      parsed.emergencyContacts = sanitizeContacts(parsed.emergencyContacts);
       const result: ActionPlan = { ...parsed, generatedAt: new Date().toISOString() };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
       setPlan(result);
