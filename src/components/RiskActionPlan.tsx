@@ -103,7 +103,14 @@ const RiskActionPlan = ({ triggerAnalysis }: Props) => {
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState<ActionPlan | null>(() => {
     const s = localStorage.getItem(STORAGE_KEY);
-    return s ? JSON.parse(s) : null;
+    if (!s) return null;
+    try {
+      const p = JSON.parse(s);
+      p.emergencyContacts = sanitizeContacts(p.emergencyContacts);
+      return p;
+    } catch {
+      return null;
+    }
   });
   const [done, setDone] = useState<Record<number, boolean>>({});
 
