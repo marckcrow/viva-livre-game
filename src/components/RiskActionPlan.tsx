@@ -30,6 +30,53 @@ interface ActionPlan {
 
 const STORAGE_KEY = "vivaLivre_actionPlan";
 
+// Whitelist de serviços públicos e legítimos de apoio no Brasil.
+// Qualquer contato fora desta lista é descartado para evitar exibição
+// de dados sensíveis ou pessoais gerados/alucinados pela IA.
+const TRUSTED_CONTACTS: Record<string, { name: string; contact: string; when: string }> = {
+  "188": {
+    name: "CVV - Centro de Valorização da Vida",
+    contact: "188",
+    when: "Apoio emocional e prevenção do suicídio, 24h, ligação gratuita",
+  },
+  "190": {
+    name: "Polícia Militar",
+    contact: "190",
+    when: "Emergências de segurança",
+  },
+  "192": {
+    name: "SAMU - Emergência Médica",
+    contact: "192",
+    when: "Emergência médica imediata",
+  },
+  "180": {
+    name: "Central de Atendimento à Mulher",
+    contact: "180",
+    when: "Situações de violência contra a mulher",
+  },
+  "132": {
+    name: "Disque Saúde / Dependência Química",
+    contact: "132",
+    when: "Orientação sobre álcool, tabaco e outras drogas",
+  },
+};
+
+const sanitizeContacts = (list: EmergencyContact[] = []): EmergencyContact[] => {
+  const seen = new Set<string>();
+  const safe: EmergencyContact[] = [];
+  for (const c of list) {
+    const digits = (c?.contact || "").replace(/\D/g, "");
+    const trusted = TRUSTED_CONTACTS[digits];
+    if (!trusted || seen.has(digits)) continue;
+    seen.add(digits);
+    // Usa SEMPRE o nome/descrição da whitelist, ignorando texto vindo da IA.
+    safe.push(trusted);
+  }
+  // Garante ao menos o CVV como apoio padrão.
+  if (safe.length === 0) safe.push(TRUSTED_CONTACTS["188"]);
+  return safe;
+};
+
 const iconMap: Record<string, typeof Wind> = {
   breath: Wind,
   water: Droplets,
@@ -56,7 +103,14 @@ const RiskActionPlan = ({ triggerAnalysis }: Props) => {
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState<ActionPlan | null>(() => {
     const s = localStorage.getItem(STORAGE_KEY);
-    return s ? JSON.parse(s) : null;
+    if (!s) return null;
+    try {
+      const p = JSON.parse(s);
+      p.emergencyContacts = sanitizeContacts(p.emergencyContacts);
+      return p;
+    } catch {
+      return null;
+    }
   });
   const [done, setDone] = useState<Record<number, boolean>>({});
 
@@ -79,6 +133,7 @@ const RiskActionPlan = ({ triggerAnalysis }: Props) => {
       const jsonStr = raw.replace(/^```json\s*|\s*```$/g, "").match(/\{[\s\S]*\}/)?.[0];
       if (!jsonStr) throw new Error("Resposta inválida da IA");
       const parsed = JSON.parse(jsonStr);
+      parsed.emergencyContacts = sanitizeContacts(parsed.emergencyContacts);
       const result: ActionPlan = { ...parsed, generatedAt: new Date().toISOString() };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
       setPlan(result);
