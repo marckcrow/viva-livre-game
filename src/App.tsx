@@ -10,6 +10,7 @@ import History from "./pages/History";
 import Transparency from "./pages/Transparency";
 import Auth from "./pages/Auth";
 import Community from "./pages/Community";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/history" element={<History />} />
           <Route path="/transparencia" element={<Transparency />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/community" element={<Community />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

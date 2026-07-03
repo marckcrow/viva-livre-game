@@ -2,97 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/*
+  Viva+ Livre — Jornada Estoica de Autodomínio
+  Paleta: azul-petróleo, grafite, dourado suave, oliva, bege claro.
+  Estilo: diário filosófico digital.
 */
 
 @layer base {
   :root {
-    --background: 135 20% 98%;
-    --foreground: 160 15% 15%;
+    /* Bege claro / pergaminho */
+    --background: 40 30% 96%;
+    --foreground: 210 25% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 15% 15%;
+    --card: 40 25% 98%;
+    --card-foreground: 210 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 15% 15%;
+    --popover: 40 25% 98%;
+    --popover-foreground: 210 25% 15%;
 
-    --primary: 145 65% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 145 75% 65%;
+    /* Azul-petróleo */
+    --primary: 195 45% 25%;
+    --primary-foreground: 40 30% 96%;
+    --primary-glow: 195 40% 40%;
 
-    --secondary: 200 60% 50%;
-    --secondary-foreground: 0 0% 100%;
+    /* Verde-oliva */
+    --secondary: 75 25% 40%;
+    --secondary-foreground: 40 30% 96%;
 
-    --muted: 135 15% 92%;
-    --muted-foreground: 160 10% 45%;
+    --muted: 40 15% 90%;
+    --muted-foreground: 210 12% 40%;
 
-    --accent: 45 95% 60%;
-    --accent-foreground: 160 15% 15%;
+    /* Dourado suave */
+    --accent: 40 55% 55%;
+    --accent-foreground: 210 25% 15%;
 
-    --success: 145 65% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 75 30% 40%;
+    --success-foreground: 40 30% 96%;
 
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 10 55% 45%;
+    --destructive-foreground: 40 30% 96%;
 
-    --border: 135 15% 88%;
-    --input: 135 15% 88%;
-    --ring: 145 65% 45%;
+    --border: 40 20% 82%;
+    --input: 40 20% 85%;
+    --ring: 195 45% 25%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(145 65% 45%) 0%, hsl(200 60% 50%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(135 20% 98%) 100%);
-    --gradient-achievement: linear-gradient(135deg, hsl(45 95% 60%) 0%, hsl(35 90% 55%) 100%);
-    
-    --shadow-soft: 0 4px 20px -4px hsl(145 65% 45% / 0.15);
-    --shadow-glow: 0 0 30px hsl(145 75% 65% / 0.3);
-    --shadow-achievement: 0 8px 30px -8px hsl(45 95% 60% / 0.4);
+    --gradient-hero: linear-gradient(135deg, hsl(195 45% 20%) 0%, hsl(210 30% 25%) 55%, hsl(75 25% 30%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(40 30% 98%) 0%, hsl(40 25% 95%) 100%);
+    --gradient-achievement: linear-gradient(135deg, hsl(40 55% 55%) 0%, hsl(35 50% 45%) 100%);
+    --gradient-parchment: linear-gradient(180deg, hsl(40 35% 96%) 0%, hsl(40 25% 92%) 100%);
+
+    --shadow-soft: 0 4px 20px -6px hsl(210 25% 15% / 0.12);
+    --shadow-glow: 0 0 40px hsl(40 55% 55% / 0.25);
+    --shadow-achievement: 0 8px 30px -8px hsl(40 55% 55% / 0.4);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 160 20% 10%;
-    --foreground: 135 15% 90%;
+    /* Grafite profundo */
+    --background: 210 20% 10%;
+    --foreground: 40 25% 90%;
 
-    --card: 160 15% 12%;
-    --card-foreground: 135 15% 90%;
+    --card: 210 20% 13%;
+    --card-foreground: 40 25% 90%;
 
-    --popover: 160 15% 12%;
-    --popover-foreground: 135 15% 90%;
+    --popover: 210 20% 13%;
+    --popover-foreground: 40 25% 90%;
 
-    --primary: 145 60% 50%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 145 70% 60%;
+    --primary: 195 40% 55%;
+    --primary-foreground: 210 25% 10%;
+    --primary-glow: 195 50% 65%;
 
-    --secondary: 200 50% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 75 20% 50%;
+    --secondary-foreground: 210 25% 10%;
 
-    --muted: 160 10% 18%;
-    --muted-foreground: 135 10% 60%;
+    --muted: 210 15% 18%;
+    --muted-foreground: 40 15% 65%;
 
-    --accent: 45 90% 65%;
-    --accent-foreground: 160 20% 10%;
+    --accent: 40 50% 60%;
+    --accent-foreground: 210 25% 10%;
 
-    --success: 145 60% 50%;
-    --success-foreground: 0 0% 100%;
+    --success: 75 25% 50%;
+    --success-foreground: 210 25% 10%;
 
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 10 55% 55%;
+    --destructive-foreground: 40 25% 90%;
 
-    --border: 160 10% 20%;
-    --input: 160 10% 20%;
-    --ring: 145 60% 50%;
+    --border: 210 15% 22%;
+    --input: 210 15% 22%;
+    --ring: 195 40% 55%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(145 60% 35%) 0%, hsl(200 50% 35%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(160 15% 12%) 0%, hsl(160 15% 14%) 100%);
-    --gradient-achievement: linear-gradient(135deg, hsl(45 90% 50%) 0%, hsl(35 85% 45%) 100%);
-    
-    --shadow-soft: 0 4px 20px -4px hsl(145 60% 35% / 0.3);
-    --shadow-glow: 0 0 30px hsl(145 70% 60% / 0.4);
-    --shadow-achievement: 0 8px 30px -8px hsl(45 90% 50% / 0.5);
+    --gradient-hero: linear-gradient(135deg, hsl(210 30% 12%) 0%, hsl(195 40% 18%) 60%, hsl(75 20% 20%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(210 20% 13%) 0%, hsl(210 20% 11%) 100%);
+    --gradient-achievement: linear-gradient(135deg, hsl(40 50% 55%) 0%, hsl(35 45% 40%) 100%);
+    --gradient-parchment: linear-gradient(180deg, hsl(210 20% 14%) 0%, hsl(210 20% 11%) 100%);
+
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px hsl(40 50% 60% / 0.2);
+    --shadow-achievement: 0 8px 30px -8px hsl(40 50% 55% / 0.4);
   }
 }
 
@@ -103,5 +112,24 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04";
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .parchment {
+    background: var(--gradient-parchment);
   }
 }
