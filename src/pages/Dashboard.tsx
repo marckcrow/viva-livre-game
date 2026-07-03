@@ -9,6 +9,8 @@ import HealthBenefits from "@/components/HealthBenefits";
 import ReminderSettings from "@/components/ReminderSettings";
 import ProgressCharts from "@/components/ProgressCharts";
 import DailyMotivation from "@/components/DailyMotivation";
+import DailyStoicMission from "@/components/DailyStoicMission";
+import StoicJournal from "@/components/StoicJournal";
 import RecoveryPhases from "@/components/RecoveryPhases";
 import WellnessTips from "@/components/WellnessTips";
 import GuidedPrayer from "@/components/GuidedPrayer";
@@ -76,12 +78,18 @@ const Dashboard = () => {
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold">Olá, Campeão! 👋</h2>
-          <p className="text-muted-foreground">Continue firme na sua jornada de liberdade</p>
+          <h2 className="font-display text-4xl md:text-5xl">Salve, caminhante.</h2>
+          <p className="text-muted-foreground italic font-display text-lg">Um dia por vez. Um passo por vez. Firme.</p>
         </div>
 
-        {/* Daily Motivation */}
+        {/* Missão e citação estoicas do dia */}
+        <DailyStoicMission />
+
+        {/* Motivação diária */}
         <DailyMotivation />
+
+        {/* Diário Estoico */}
+        <StoicJournal />
 
         {/* AI Tips */}
         <AiTips daysClean={daysClean} />
