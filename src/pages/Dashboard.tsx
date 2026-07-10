@@ -31,7 +31,7 @@ import TriggerAnalysis from "@/components/TriggerAnalysis";
 import HabitsCalendar from "@/components/HabitsCalendar";
 import InstallAppButton from "@/components/InstallAppButton";
 import InstallBanner from "@/components/InstallBanner";
-import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
+import { Heart, Sparkles, History as HistoryIcon, Users, Compass } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
 const Dashboard = () => {
