@@ -64,6 +64,10 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-2">
             <InstallAppButton variant="outline" />
+            <Button onClick={() => navigate("/jornada")} variant="default" size="sm">
+              <Compass className="w-4 h-4 mr-2" />
+              Jornada Estoica
+            </Button>
             <Button onClick={() => navigate("/community")} variant="ghost" size="sm">
               <Users className="w-4 h-4 mr-2" />
               Comunidade
