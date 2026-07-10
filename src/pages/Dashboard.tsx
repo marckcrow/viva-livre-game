@@ -31,7 +31,7 @@ import TriggerAnalysis from "@/components/TriggerAnalysis";
 import HabitsCalendar from "@/components/HabitsCalendar";
 import InstallAppButton from "@/components/InstallAppButton";
 import InstallBanner from "@/components/InstallBanner";
-import { Heart, Sparkles, History as HistoryIcon, Users } from "lucide-react";
+import { Heart, Sparkles, History as HistoryIcon, Users, Compass } from "lucide-react";
 import { useLocalConsumption, calculateDaysClean, useLocalProgress } from "@/hooks/useLocalUser";
 
 const Dashboard = () => {
@@ -64,6 +64,10 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-2">
             <InstallAppButton variant="outline" />
+            <Button onClick={() => navigate("/jornada")} variant="default" size="sm">
+              <Compass className="w-4 h-4 mr-2" />
+              Jornada Estoica
+            </Button>
             <Button onClick={() => navigate("/community")} variant="ghost" size="sm">
               <Users className="w-4 h-4 mr-2" />
               Comunidade
