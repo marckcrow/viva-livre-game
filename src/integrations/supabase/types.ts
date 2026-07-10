@@ -276,6 +276,209 @@ export type Database = {
         }
         Relationships: []
       }
+      stoic_control_items: {
+        Row: {
+          control_type: string
+          created_at: string
+          description: string
+          entry_date: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          control_type: string
+          created_at?: string
+          description: string
+          entry_date: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          control_type?: string
+          created_at?: string
+          description?: string
+          entry_date?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stoic_daily_checkins: {
+        Row: {
+          control_level: string
+          created_at: string
+          entry_date: string
+          id: string
+          mood: string
+          mood_intensity: number
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          control_level: string
+          created_at?: string
+          entry_date: string
+          id?: string
+          mood: string
+          mood_intensity: number
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          control_level?: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          mood?: string
+          mood_intensity?: number
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stoic_priorities: {
+        Row: {
+          completed: boolean
+          created_at: string
+          description: string
+          entry_date: string
+          id: string
+          priority_level: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          description: string
+          entry_date: string
+          id?: string
+          priority_level: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          description?: string
+          entry_date?: string
+          id?: string
+          priority_level?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stoic_profiles: {
+        Row: {
+          created_at: string
+          current_day: number
+          id: string
+          journey_completed_at: string | null
+          journey_started_at: string | null
+          preferred_evening_time: string | null
+          preferred_morning_time: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_day?: number
+          id?: string
+          journey_completed_at?: string | null
+          journey_started_at?: string | null
+          preferred_evening_time?: string | null
+          preferred_morning_time?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_day?: number
+          id?: string
+          journey_completed_at?: string | null
+          journey_started_at?: string | null
+          preferred_evening_time?: string | null
+          preferred_morning_time?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stoic_user_virtues: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          intended_action: string | null
+          rating: number | null
+          reflection: string | null
+          user_id: string
+          virtue_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          id?: string
+          intended_action?: string | null
+          rating?: number | null
+          reflection?: string | null
+          user_id: string
+          virtue_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          intended_action?: string | null
+          rating?: number | null
+          reflection?: string | null
+          user_id?: string
+          virtue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stoic_user_virtues_virtue_id_fkey"
+            columns: ["virtue_id"]
+            isOneToOne: false
+            referencedRelation: "stoic_virtues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stoic_virtues: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
